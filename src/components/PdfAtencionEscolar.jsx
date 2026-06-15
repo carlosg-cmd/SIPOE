@@ -248,26 +248,30 @@ export default function PdfAtencionEscolar({ data, firmas }) {
               <Text style={[styles.tableCellValue, { minHeight: 60 }]}>{t(f.observaciones)}</Text>
             </View>
           </View>
+        </View>
 
-          <Text style={styles.subTitle}>DATOS DE SEGUIMIENTO</Text>
-          {segs.map((seg, idx) => (
-            <View key={idx} wrap={false} break={idx > 0 && idx % 4 === 0}>
-              <View style={styles.tableRow}>
-                <View style={[styles.tableCol, { width: '20%' }]}><Text style={[styles.tableCellLabel, styles.textCenter]}>FECHA</Text><Text style={[styles.tableCellValue, styles.textCenter]}>{t(seg.fecha)}</Text></View>
-                <View style={[styles.tableCol, { width: '80%', borderRightWidth: 0 }]}>
-                  <Text style={[styles.tableCellLabel, styles.textCenter]}>DESCRIPCION DE SEGUIMIENTO</Text>
-                  <Text style={[styles.tableCellValue, { minHeight: 30 }]}>{t(seg.descripcion)}</Text>
-                </View>
-              </View>
-              <View style={styles.tableRow}>
-                <View style={[styles.tableCol, { width: '20%' }]}></View>
-                <View style={[styles.tableCol, { width: '80%', borderRightWidth: 0 }]}>
-                  <Text style={[styles.tableCellLabel, styles.textCenter]}>ACUERDOS / OBSERVACIONES</Text>
-                  <Text style={[styles.tableCellValue, { minHeight: 30 }]}>{t(seg.acuerdos)}</Text>
-                </View>
+        <Text style={[styles.subTitle, { borderWidth: 1, borderColor: '#000', marginBottom: 5 }]}>DATOS DE SEGUIMIENTO</Text>
+
+        {segs.map((seg, idx) => (
+          <View key={idx} wrap={false} style={styles.table}>
+            <View style={styles.tableRow}>
+              <View style={[styles.tableCol, { width: '20%' }]}><Text style={[styles.tableCellLabel, styles.textCenter]}>FECHA</Text><Text style={[styles.tableCellValue, styles.textCenter]}>{t(seg.fecha)}</Text></View>
+              <View style={[styles.tableCol, { width: '80%', borderRightWidth: 0 }]}>
+                <Text style={[styles.tableCellLabel, styles.textCenter]}>DESCRIPCION DE SEGUIMIENTO</Text>
+                <Text style={[styles.tableCellValue, { minHeight: 30 }]}>{t(seg.descripcion)}</Text>
               </View>
             </View>
-          ))}
+            <View style={styles.tableRow}>
+              <View style={[styles.tableCol, { width: '20%' }]}></View>
+              <View style={[styles.tableCol, { width: '80%', borderRightWidth: 0 }]}>
+                <Text style={[styles.tableCellLabel, styles.textCenter]}>ACUERDOS / OBSERVACIONES</Text>
+                <Text style={[styles.tableCellValue, { minHeight: 30 }]}>{t(seg.acuerdos)}</Text>
+              </View>
+            </View>
+          </View>
+        ))}
+
+        <View style={styles.table}>
 
           <Text style={styles.subTitle}>ORIENTACIONES Y RECOMENDACIONES</Text>
           <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>

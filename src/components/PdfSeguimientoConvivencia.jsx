@@ -134,45 +134,47 @@ export default function PdfSeguimientoConvivencia({ data, firmas }) {
 
           <Text style={styles.subTitle}>COMPROMISOS A SEGUIR</Text>
           <View style={styles.tableRow}>
-            <View style={[styles.tableCol, { width: '100%', borderRightWidth: 0 }]}>
-              <Text style={[styles.tableCellValue, { minHeight: 40 }]}>{t(f.compromisos)}</Text>
+            <View style={[styles.tableCol, { width: '100%', borderRightWidth: 0, padding: 4 }]}>
+              <Text style={styles.tableCellValue}>{t(f.acuerdos)}</Text>
             </View>
           </View>
+        </View>
 
-          <Text style={styles.subTitle}>SEGUIMIENTO</Text>
+        <Text style={[styles.subTitle, { borderWidth: 1, borderColor: '#000', marginBottom: 0, borderBottomWidth: 0 }]}>SEGUIMIENTO PEDAGÓGICO A COMPROMISOS</Text>
+        <View style={[styles.table, { marginBottom: 5 }]}>
           <View style={styles.tableRow}>
             <View style={[styles.tableCol, { width: '100%', borderRightWidth: 0, padding: 4, backgroundColor: '#f8fafc' }]}>
               <Text style={{ fontSize: 8, fontStyle: 'italic', textAlign: 'center' }}>
-                Se realizan encuentros periódicos de manera quincenal (con posibles modificaciones según sea necesario)
+                *Se realizarán 4 encuentros de seguimiento (2 virtuales y 2 presenciales) de máximo 15 minutos, dentro de los 2 meses posteriores a la firma de este documento, por parte de docente tutor y orientador.
               </Text>
             </View>
           </View>
+        </View>
 
-          {encuentros.map((enc, idx) => {
-            const numText = idx === 0 ? 'Primer' : idx === 1 ? 'Segundo' : idx === 2 ? 'Tercer' : 'Cuarto';
-            return (
-              <View key={idx} style={{ borderBottomWidth: idx < 3 ? 1 : 0, borderColor: '#000', paddingBottom: 5, paddingTop: 5 }}>
-                <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
-                  <View style={[styles.tableCol, { width: '40%', borderRightWidth: 0, borderBottomWidth: 0, borderTopWidth: 0 }]}><Text style={styles.tableCellLabel}>{numText} encuentro:</Text><Text style={styles.tableCellValue}>{t(enc.fecha)}</Text></View>
-                  <View style={[styles.tableCol, { width: '60%', borderRightWidth: 0, borderBottomWidth: 0, borderTopWidth: 0, padding: 2 }]}>
-                    <Text style={[styles.tableCellLabel, {marginBottom: 2}]}>Resultado:</Text>
-                    <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                      <View style={{ marginRight: 15 }}><CheckBox checked={enc.resultado === 'Cumple'} label="Cumple" /></View>
-                      <View style={{ marginRight: 15 }}><CheckBox checked={enc.resultado === 'Cumple parcialmente'} label="Cumple parcialmente" /></View>
-                      <View style={{ marginRight: 15 }}><CheckBox checked={enc.resultado === 'No cumple'} label="No cumple" /></View>
-                    </View>
-                  </View>
-                </View>
-                <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
-                  <View style={[styles.tableCol, { width: '100%', borderRightWidth: 0, borderBottomWidth: 0, borderTopWidth: 0 }]}>
-                    <Text style={styles.tableCellLabel}>Observación breve:</Text>
-                    <Text style={styles.tableCellValue}>{t(enc.observacion)}</Text>
+        {encuentros.map((enc, idx) => {
+          const numText = idx === 0 ? 'Primer' : idx === 1 ? 'Segundo' : idx === 2 ? 'Tercer' : 'Cuarto';
+          return (
+            <View key={idx} wrap={false} style={[styles.table, { marginBottom: 5 }]}>
+              <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
+                <View style={[styles.tableCol, { width: '40%', borderRightWidth: 0, borderBottomWidth: 0, borderTopWidth: 0 }]}><Text style={styles.tableCellLabel}>{numText} encuentro:</Text><Text style={styles.tableCellValue}>{t(enc.fecha)}</Text></View>
+                <View style={[styles.tableCol, { width: '60%', borderRightWidth: 0, borderBottomWidth: 0, borderTopWidth: 0, padding: 2 }]}>
+                  <Text style={[styles.tableCellLabel, {marginBottom: 2}]}>Resultado:</Text>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                    <View style={{ marginRight: 15 }}><CheckBox checked={enc.resultado === 'Cumple'} label="Cumple" /></View>
+                    <View style={{ marginRight: 15 }}><CheckBox checked={enc.resultado === 'Cumple parcialmente'} label="Cumple parcialmente" /></View>
+                    <View style={{ marginRight: 15 }}><CheckBox checked={enc.resultado === 'No cumple'} label="No cumple" /></View>
                   </View>
                 </View>
               </View>
-            );
-          })}
-        </View>
+              <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
+                <View style={[styles.tableCol, { width: '100%', borderRightWidth: 0, borderBottomWidth: 0, borderTopWidth: 0 }]}>
+                  <Text style={styles.tableCellLabel}>Observación breve:</Text>
+                  <Text style={styles.tableCellValue}>{t(enc.observacion)}</Text>
+                </View>
+              </View>
+            </View>
+          );
+        })}
 
         <View style={styles.table} wrap={false}>
           <Text style={styles.subTitle}>VALORACIÓN FINAL DEL PROCESO (DOS MESES)</Text>
