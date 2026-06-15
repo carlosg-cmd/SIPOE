@@ -34,7 +34,6 @@ export default function NuevaAtencion() {
     acompanamiento: 'Individual',
     activacion_ruta: '',
     formato_fisico: 'Si',
-    firma_estudiante: null,
     director_grupo: '',
     telefono: ''
   };
@@ -73,8 +72,7 @@ export default function NuevaAtencion() {
         observaciones_finales: obsFin,
         motivo_principal: data.motivos && data.motivos[0] ? data.motivos[0] : '',
         tipo_remitente: data.cargo_remitente || 'Autónomo',
-        nombre_remitente: data.nombre_remitente === 'Autónomo' ? '' : data.nombre_remitente,
-        firma_estudiante: data.firma_base64 || null
+        nombre_remitente: data.nombre_remitente === 'Autónomo' ? '' : data.nombre_remitente
       }));
     }
   };
@@ -128,52 +126,8 @@ export default function NuevaAtencion() {
     }
   }, [editIdUrl]);
 
-
-  const handleSignatureUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-
-        // Quitar fondo blanco/claro y oscurecer el trazo
-        for (let i = 0; i < data.length; i += 4) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-
-          // Si es muy claro, hacerlo transparente
-          if (r > 200 && g > 200 && b > 200) {
-            data[i + 3] = 0; // Alpha 0
-          } else {
-            // Oscurecer la firma (azul oscuro) para que resalte
-            data[i] = 15;     // R
-            data[i + 1] = 23; // G
-            data[i + 2] = 61; // B
-          }
-        }
-
-        ctx.putImageData(imageData, 0, 0);
-        const processedDataUrl = canvas.toDataURL('image/png');
-        setFormData(prev => ({ ...prev, firma_estudiante: processedDataUrl }));
-      };
-      img.src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const removeSignature = () => {
-    setFormData(prev => ({ ...prev, firma_estudiante: null }));
+  const handleObservacionesChange = (e) => {
+    setFormData(prev => ({ ...prev, observaciones: e.target.value }));
   };
 
   const handleSubmit = async (e) => {
@@ -186,15 +140,11 @@ export default function NuevaAtencion() {
 
     const nombreFinalRemitente = formData.tipo_remitente === 'Autónomo' ? 'Autónomo' : formData.nombre_remitente;
     
-    // Preparar observaciones incluyendo la firma si existe (como base64 o anotación)
+    // Preparar observaciones
     let observacionFinal = `Sede: ${formData.sede}. Fecha Remisión: ${formData.fecha_remision}. Acompañamiento: ${formData.acompanamiento}. Formato físico: ${formData.formato_fisico}. ${formData.observaciones}`;
     
     if (formData.observaciones_finales) {
       observacionFinal += `\n[Observaciones Finales] ${formData.observaciones_finales}`;
-    }
-
-    if (formData.firma_estudiante && !formData.firma_estudiante.startsWith('http')) {
-      observacionFinal += `\n[Firma Digital Adjunta en Sistema]`;
     }
 
     try {
@@ -208,8 +158,7 @@ export default function NuevaAtencion() {
           motivos: [formData.motivo_principal],
           descripcion: formData.descripcion,
           observaciones: observacionFinal,
-          orientaciones: formData.orientaciones,
-          firma_base64: formData.firma_estudiante || null
+          orientaciones: formData.orientaciones
         });
       } else {
         await saveSmartly('atenciones', 'insert', {
@@ -221,8 +170,7 @@ export default function NuevaAtencion() {
           descripcion: formData.descripcion,
           observaciones: observacionFinal,
           orientaciones: formData.orientaciones,
-          orientador_id: session.user.id,
-          firma_base64: formData.firma_estudiante || null
+          orientador_id: session.user.id
         });
       }
     } catch (atencionError) {
@@ -232,7 +180,7 @@ export default function NuevaAtencion() {
 
     if (formData.activacion_ruta && formData.activacion_ruta !== 'Ninguna') {
       await saveSmartly('activacion_ruta', 'insert', {
-        atencion_id: editIdUrl || crypto.randomUUID(), // Nota: en modo offline, la relacion puede necesitar lógica extra
+        atencion_id: editIdUrl || crypto.randomUUID(), 
         entidad_destino: formData.activacion_ruta,
         descripcion: `Ruta activada por: ${formData.motivo_principal}`,
         acciones_realizadas: 'Remisión inicial'
@@ -513,7 +461,7 @@ export default function NuevaAtencion() {
               <textarea
                 rows="3"
                 value={formData.observaciones}
-                onChange={e => setFormData({...formData, observaciones: e.target.value})}
+                onChange={handleObservacionesChange}
                 className="w-full py-3 px-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-gray-800 resize-none"
               ></textarea>
             </div>
@@ -548,11 +496,11 @@ export default function NuevaAtencion() {
           </div>
         </div>
 
-        {/* SECCIÓN 4: RUTA Y FIRMA */}
+        {/* SECCIÓN 4: RUTA */}
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
           <h2 className="text-base font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">4. Cierre y Formalización</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Activación de Ruta</label>
               <select
@@ -576,48 +524,6 @@ export default function NuevaAtencion() {
                 <option value="No">No firmado</option>
               </select>
             </div>
-          </div>
-
-          <div className="mt-4">
-            <label className="block text-sm font-semibold text-gray-700 mb-3">Firma Digital del Estudiante (Opcional)</label>
-            
-            {formData.firma_estudiante ? (
-              <div className="relative inline-block border-2 border-slate-200 rounded-xl p-4 bg-white shadow-sm">
-                <img 
-                  src={formData.firma_estudiante} 
-                  alt="Firma del estudiante" 
-                  className="max-h-32 object-contain bg-transparent"
-                />
-                <button 
-                  type="button"
-                  onClick={removeSignature}
-                  className="absolute -top-3 -right-3 bg-red-100 text-red-600 p-2 rounded-full hover:bg-red-200 transition-colors shadow-sm"
-                  title="Eliminar firma"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <div className="border-2 border-dashed border-indigo-200 bg-indigo-50/30 rounded-xl p-8 text-center hover:bg-indigo-50 transition-colors relative cursor-pointer">
-                <input 
-                  type="file" 
-                  accept="image/png, image/jpeg" 
-                  onChange={handleSignatureUpload}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                />
-                <div className="flex flex-col items-center justify-center">
-                  <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center text-indigo-500 mb-3">
-                    <ImageIcon className="w-6 h-6" />
-                  </div>
-                  <p className="text-sm font-medium text-indigo-900 mb-1">
-                    Sube la foto de la firma (JPG/PNG)
-                  </p>
-                  <p className="text-xs text-indigo-500/70">
-                    El sistema limpiará el fondo automáticamente
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
