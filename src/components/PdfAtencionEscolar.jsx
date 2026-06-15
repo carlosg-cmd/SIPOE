@@ -275,26 +275,11 @@ export default function PdfAtencionEscolar({ data, firmas }) {
           </View>
         ))}
 
-        <View style={styles.table}>
-
+        <View style={styles.table} wrap={false}>
           <Text style={styles.subTitle}>ORIENTACIONES Y RECOMENDACIONES</Text>
           <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
             <View style={[styles.tableCol, { width: '100%', borderRightWidth: 0 }]}>
               <Text style={[styles.tableCellValue, { minHeight: 60 }]}>{t(f.orientaciones)}</Text>
-            </View>
-          </View>
-        </View>
-
-      </Page>
-
-      {/* PAGE 3 */}
-      <Page size="LETTER" style={styles.page}>
-        <Header />
-        
-        <View style={styles.table}>
-          <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
-            <View style={[styles.tableCol, { width: '100%', borderRightWidth: 0 }]}>
-              <Text style={[styles.tableCellValue, { minHeight: 100 }]}>{' '}</Text>
             </View>
           </View>
         </View>
