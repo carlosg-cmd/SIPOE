@@ -251,7 +251,7 @@ export default function Atenciones() {
                             Editar
                           </Link>
                         )}
-                        <Link to="/seguimientos" className="text-emerald-600 hover:text-emerald-900 transition-colors font-semibold">Seguimiento</Link>
+                        <Link to={`/seguimientos?nuevo=true&estudiante_id=${a.estudiantes?.id}`} className="text-emerald-600 hover:text-emerald-900 transition-colors font-semibold">Seguimiento</Link>
                     </td>
                   </tr>
                 ))}

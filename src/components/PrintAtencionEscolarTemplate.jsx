@@ -105,6 +105,36 @@ export default function PrintAtencionEscolarTemplate({ data, onClose }) {
   }, [est.id]);
 
   useEffect(() => {
+    if (!est.id) return;
+    const fetchSeguimientos = async () => {
+      const { data: segs, error } = await supabase
+        .from('seguimientos')
+        .select('*')
+        .eq('estudiante_id', est.id)
+        .order('fecha', { ascending: true });
+        
+      if (!error && segs && segs.length > 0) {
+        const mappedSegs = segs.map(s => ({
+          fecha: s.fecha,
+          descripcion: s.descripcion || '',
+          acuerdos: s.compromisos || ''
+        }));
+        
+        while (mappedSegs.length < 4) {
+          mappedSegs.push({ fecha: '', descripcion: '', acuerdos: '' });
+        }
+        
+        setFields(prev => ({
+          ...prev,
+          seguimientos: mappedSegs
+        }));
+      }
+    };
+    
+    fetchSeguimientos();
+  }, [est.id]);
+
+  useEffect(() => {
     const fetchFirmaAcudientePorNombre = async () => {
       const nombre = fields.acudiente_nombre?.trim();
       if (!nombre || nombre.length < 3) return;

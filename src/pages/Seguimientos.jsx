@@ -4,6 +4,7 @@ import { Search, Loader2, Calendar, FileText, CheckCircle, CheckCircle2, Clock, 
 import { useAuth } from '../contexts/AuthContext';
 import PrintSeguimientoConvivenciaTemplate from '../components/PrintSeguimientoConvivenciaTemplate';
 import DictationButton from '../components/DictationButton';
+import { useSearchParams } from 'react-router-dom';
 
 export default function Seguimientos() {
   const { permisos, session } = useAuth();
@@ -11,6 +12,7 @@ export default function Seguimientos() {
   const [estudiantes, setEstudiantes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams] = useSearchParams();
   
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -68,7 +70,15 @@ export default function Seguimientos() {
   useEffect(() => {
     fetchSeguimientos();
     fetchEstudiantes();
-  }, []);
+    
+    const nuevo = searchParams.get('nuevo');
+    const estId = searchParams.get('estudiante_id');
+    if (nuevo === 'true' && estId) {
+      setFormData(prev => ({ ...prev, estudiante_id: estId }));
+      setShowModal(true);
+      setIsEditing(false);
+    }
+  }, [searchParams]);
 
 
   const handleSubmit = async (e) => {
