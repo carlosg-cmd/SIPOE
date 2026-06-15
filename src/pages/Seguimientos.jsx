@@ -158,6 +158,12 @@ export default function Seguimientos() {
     fetchSeguimientos();
   };
 
+  const eliminarTodosSeguimientos = async (estudiante_id) => {
+    if (!window.confirm("¿Estás seguro de eliminar TODOS los seguimientos de este estudiante? Esta acción no se puede deshacer.")) return;
+    await supabase.from('seguimientos').delete().eq('estudiante_id', estudiante_id);
+    fetchSeguimientos();
+  };
+
   const filteredSeguimientos = seguimientos.filter(s => {
     const estudiante = s.estudiantes ? `${s.estudiantes.nombres} ${s.estudiantes.apellidos}`.toLowerCase() : '';
     const doc = s.estudiantes?.documento || '';
@@ -274,10 +280,22 @@ export default function Seguimientos() {
                             fecha: new Date().toISOString().split('T')[0]
                           }); 
                         }}
-                        className="p-2 bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-700 rounded-lg transition-colors border border-slate-200"
+                        className="p-2 bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-700 rounded-lg transition-colors border border-slate-200 mr-2"
                         title="Imprimir Consolidado"
                       >
                         <Printer className="w-5 h-5" />
+                      </button>
+                    )}
+                    {permisos?.can_edit && (
+                      <button 
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          eliminarTodosSeguimientos(caso.estudiante?.id);
+                        }}
+                        className="p-2 bg-slate-100 hover:bg-red-100 text-slate-600 hover:text-red-600 rounded-lg transition-colors border border-slate-200"
+                        title="Eliminar todos los seguimientos de este estudiante"
+                      >
+                        <Trash2 className="w-5 h-5" />
                       </button>
                     )}
                   </div>
