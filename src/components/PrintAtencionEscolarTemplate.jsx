@@ -9,19 +9,59 @@ export default function PrintAtencionEscolarTemplate({ data, onClose }) {
 
   const est = data.estudiantes || data.estudiante || data || {};
   
-  const acudienteData = typeof est.datos_acudiente === 'string' 
-    ? JSON.parse(est.datos_acudiente) 
-    : (est.datos_acudiente || {});
-  
-  const acudienteNombre = `${acudienteData.nombres || ''} ${acudienteData.apellidos || ''}`.trim();
-  const acudienteTelefono = acudienteData.telefono || '';
-  const acudienteParentesco = acudienteData.parentesco || '';
-  const acudienteDoc = acudienteData.documento || '';
+  let acudienteNombre = '';
+  let acudienteTelefono = '';
+  let acudienteParentesco = '';
+  let acudienteDoc = '';
 
-  const nombresArr = (est.nombres || '').split(' ');
-  const apellidosArr = (est.apellidos || '').split(' ');
-  const apellido1 = apellidosArr[0] || '';
-  const apellido2 = apellidosArr.slice(1).join(' ') || '';
+  if (typeof est.datos_acudiente === 'string') {
+    try {
+      const parsed = JSON.parse(est.datos_acudiente);
+      acudienteNombre = `${parsed.nombres || ''} ${parsed.apellidos || ''}`.trim();
+      if (!acudienteNombre && parsed.nombre_completo) acudienteNombre = parsed.nombre_completo;
+      if (!acudienteNombre && parsed.nombres) acudienteNombre = parsed.nombres;
+      acudienteTelefono = parsed.telefono || '';
+      acudienteParentesco = parsed.parentesco || '';
+      acudienteDoc = parsed.documento || '';
+    } catch(e) {
+      acudienteNombre = est.datos_acudiente.trim();
+    }
+  } else if (est.datos_acudiente) {
+    acudienteNombre = `${est.datos_acudiente.nombres || ''} ${est.datos_acudiente.apellidos || ''}`.trim();
+    if (!acudienteNombre && est.datos_acudiente.nombre_completo) acudienteNombre = est.datos_acudiente.nombre_completo;
+    if (!acudienteNombre && est.datos_acudiente.nombres) acudienteNombre = est.datos_acudiente.nombres;
+    acudienteTelefono = est.datos_acudiente.telefono || '';
+    acudienteParentesco = est.datos_acudiente.parentesco || '';
+    acudienteDoc = est.datos_acudiente.documento || '';
+  }
+
+  let nombresPart = '';
+  let apellido1 = '';
+  let apellido2 = '';
+
+  if (est.apellidos && est.apellidos.trim() !== '') {
+    const apArr = est.apellidos.trim().split(' ');
+    apellido1 = apArr[0] || '';
+    apellido2 = apArr.slice(1).join(' ') || '';
+    nombresPart = est.nombres || '';
+  } else {
+    const fullName = (est.nombres || '').trim();
+    const parts = fullName.split(/\s+/);
+    if (parts.length === 1) {
+      nombresPart = parts[0] || '';
+    } else if (parts.length === 2) {
+      nombresPart = parts[0];
+      apellido1 = parts[1];
+    } else if (parts.length === 3) {
+      nombresPart = parts[0];
+      apellido1 = parts[1];
+      apellido2 = parts[2];
+    } else if (parts.length >= 4) {
+      apellido2 = parts.pop();
+      apellido1 = parts.pop();
+      nombresPart = parts.join(' ');
+    }
+  }
 
 
   
@@ -55,7 +95,7 @@ export default function PrintAtencionEscolarTemplate({ data, onClose }) {
     director_grupo: '',
     apellido1: apellido1,
     apellido2: apellido2,
-    nombres: est.nombres || '',
+    nombres: nombresPart,
     tipo_documento: 'T.I',
     numero_documento: est.documento || '',
     sexo: est.genero || '',
