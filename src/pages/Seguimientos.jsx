@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 import { Search, Loader2, Calendar, FileText, CheckCircle, CheckCircle2, Clock, Save, Trash2, Printer, Plus, ClipboardList, Activity } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import PrintSeguimientoConvivenciaTemplate from '../components/PrintSeguimientoConvivenciaTemplate';
+import PrintAtencionEscolarTemplate from '../components/PrintAtencionEscolarTemplate';
 import DictationButton from '../components/DictationButton';
 import { useSearchParams } from 'react-router-dom';
 
@@ -248,18 +248,9 @@ export default function Seguimientos() {
                         onClick={(e) => { 
                           e.stopPropagation(); 
                           
-                          // Convertir el historial de este estudiante al formato que espera PdfSeguimientoConvivencia
-                          const historicoAsc = [...caso.seguimientos].reverse(); // cronológico para que el 1er encuentro sea el más viejo
-                          const mappedEncuentros = historicoAsc.map(s => ({
-                            fecha: s.fecha,
-                            resultado: s.estado === 'Cerrado' ? 'Cumple' : s.estado === 'En proceso' ? 'Cumple parcialmente' : 'No cumple',
-                            observacion: s.descripcion || ''
-                          })).slice(0, 4);
-
                           setPrintData({ 
                             estudiantes: caso.estudiante,
-                            encuentros: mappedEncuentros,
-                            mes_ano: new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
+                            fecha: new Date().toISOString().split('T')[0]
                           }); 
                         }}
                         className="p-2 bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-700 rounded-lg transition-colors border border-slate-200"
@@ -458,7 +449,7 @@ export default function Seguimientos() {
       )}
 
       {printData && (
-        <PrintSeguimientoConvivenciaTemplate data={printData} onClose={() => setPrintData(null)} />
+        <PrintAtencionEscolarTemplate data={printData} onClose={() => setPrintData(null)} />
       )}
     </div>
   );
