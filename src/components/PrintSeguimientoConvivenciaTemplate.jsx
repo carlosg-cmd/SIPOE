@@ -133,7 +133,6 @@ export default function PrintSeguimientoConvivenciaTemplate({ data, onClose }) {
   });
 
   const handleAddEncuentro = () => {
-    if (fields.encuentros.length >= 4) return;
     setFields(prev => ({
       ...prev,
       encuentros: [...prev.encuentros, { fecha: '', resultado: '', observacion: '' }]
@@ -185,11 +184,9 @@ export default function PrintSeguimientoConvivenciaTemplate({ data, onClose }) {
             <div className="space-y-4">
               <div className="flex justify-between items-center border-b-2 border-indigo-100 pb-1">
                 <h3 className="font-bold text-indigo-800 text-sm">SEGUIMIENTO QUINCENAL</h3>
-                {fields.encuentros.length < 4 && (
-                  <button onClick={handleAddEncuentro} className="text-xs font-semibold text-indigo-600 hover:text-indigo-800">
-                    + Agregar Encuentro
-                  </button>
-                )}
+                <button onClick={handleAddEncuentro} className="text-xs font-semibold text-indigo-600 hover:text-indigo-800">
+                  + Agregar Encuentro
+                </button>
               </div>
               {fields.encuentros.map((enc, idx) => (
                 <div key={idx} className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm relative">

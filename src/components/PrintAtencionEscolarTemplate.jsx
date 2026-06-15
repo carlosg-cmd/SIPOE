@@ -148,6 +148,21 @@ export default function PrintAtencionEscolarTemplate({ data, onClose }) {
     fetchSeguimientos();
   }, [est.id]);
 
+  const addSeguimiento = () => {
+    setFields(prev => ({
+      ...prev,
+      seguimientos: [...prev.seguimientos, { fecha: '', descripcion: '', acuerdos: '' }]
+    }));
+  };
+
+  const removeSeguimiento = (idx) => {
+    setFields(prev => {
+      const segs = [...prev.seguimientos];
+      segs.splice(idx, 1);
+      return { ...prev, seguimientos: segs.length > 0 ? segs : [{ fecha: '', descripcion: '', acuerdos: '' }] };
+    });
+  };
+
   useEffect(() => {
     const fetchFirmaAcudientePorNombre = async () => {
       const nombre = fields.acudiente_nombre?.trim();
@@ -364,10 +379,31 @@ export default function PrintAtencionEscolarTemplate({ data, onClose }) {
 
             {/* SECCION 5 */}
             <div className="space-y-3">
-              <h3 className="font-bold text-indigo-800 border-b-2 border-indigo-100 pb-1 text-sm mt-4">DATOS DE SEGUIMIENTO</h3>
+              <div className="flex justify-between items-center mt-4">
+                <h3 className="font-bold text-indigo-800 border-b-2 border-indigo-100 pb-1 text-sm">DATOS DE SEGUIMIENTO</h3>
+                <button
+                  type="button"
+                  onClick={addSeguimiento}
+                  className="px-2 py-1 bg-indigo-100 text-indigo-700 hover:bg-indigo-200 rounded text-xs font-bold"
+                >
+                  + Añadir Seguimiento
+                </button>
+              </div>
               {fields.seguimientos.map((seg, idx) => (
-                <div key={idx} className="bg-slate-100 p-2 rounded mb-2 border border-slate-200">
-                  <div className="font-bold text-[10px] mb-1 text-gray-800">SEGUIMIENTO {idx + 1}</div>
+                <div key={idx} className="bg-slate-100 p-2 rounded mb-2 border border-slate-200 relative">
+                  <div className="flex justify-between items-center mb-1">
+                    <div className="font-bold text-[10px] text-gray-800">SEGUIMIENTO {idx + 1}</div>
+                    {fields.seguimientos.length > 1 && (
+                      <button 
+                        type="button" 
+                        onClick={() => removeSeguimiento(idx)}
+                        className="text-red-500 hover:text-red-700"
+                        title="Eliminar este seguimiento"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
                   <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1"><input type="text" placeholder="Fecha" value={seg.fecha} onChange={e => handleSeguimiento(idx, 'fecha', e.target.value)} className={inputClass} /></div>
                     <div className="col-span-2"><input type="text" placeholder="Descripción" value={seg.descripcion} onChange={e => handleSeguimiento(idx, 'descripcion', e.target.value)} className={inputClass} /></div>
