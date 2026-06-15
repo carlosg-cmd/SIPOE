@@ -251,7 +251,15 @@ export default function Atenciones() {
                             Editar
                           </Link>
                         )}
-                        <Link to={`/seguimientos?nuevo=true&estudiante_id=${a.estudiantes?.id}`} className="text-emerald-600 hover:text-emerald-900 transition-colors font-semibold">Seguimiento</Link>
+                        <button 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setPrintState({ data: a, type: 'atencion' });
+                          }}
+                          className="text-emerald-600 hover:text-emerald-900 transition-colors font-semibold"
+                        >
+                          Seguimiento
+                        </button>
                     </td>
                   </tr>
                 ))}
