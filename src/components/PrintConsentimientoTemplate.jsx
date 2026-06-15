@@ -7,8 +7,25 @@ import { supabase } from '../supabase';
 export default function PrintConsentimientoTemplate({ data, onClose }) {
   if (!data) return null;
 
-  const est = data?.estudiantes || {};
-  const acu = est.datos_acudiente || {};
+  const est = data.estudiantes || data.estudiante || data || {};
+  
+  const acudienteData = typeof est.datos_acudiente === 'string' 
+    ? JSON.parse(est.datos_acudiente) 
+    : (est.datos_acudiente || {});
+  
+  const acudienteNombre = `${acudienteData.nombres || ''} ${acudienteData.apellidos || ''}`.trim();
+  const acudienteTelefono = acudienteData.telefono || '';
+  const acudienteParentesco = acudienteData.parentesco || '';
+  const acudienteDoc = acudienteData.documento || '';
+
+  const nombresArr = (est.nombres || '').split(' ');
+  const apellidosArr = (est.apellidos || '').split(' ');
+  const apellido1 = apellidosArr[0] || '';
+  const apellido2 = apellidosArr.slice(1).join(' ') || '';
+
+
+  
+  const acu = acudienteData;
 
   // Extraer grado sin jornada
   let gradoInit = est.grado || '';
