@@ -254,18 +254,22 @@ export default function PdfAtencionEscolar({ data, firmas }) {
 
         {segs.map((seg, idx) => (
           <View key={idx} wrap={false} style={styles.table}>
-            <View style={styles.tableRow}>
-              <View style={[styles.tableCol, { width: '20%' }]}><Text style={[styles.tableCellLabel, styles.textCenter]}>FECHA</Text><Text style={[styles.tableCellValue, styles.textCenter]}>{t(seg.fecha)}</Text></View>
-              <View style={[styles.tableCol, { width: '80%', borderRightWidth: 0 }]}>
-                <Text style={[styles.tableCellLabel, styles.textCenter]}>DESCRIPCION DE SEGUIMIENTO</Text>
-                <Text style={[styles.tableCellValue, { minHeight: 30 }]}>{t(seg.descripcion)}</Text>
+            <View style={{ flexDirection: 'row' }}>
+              {/* Left Column - FECHA spanning both rows */}
+              <View style={[styles.tableCol, { width: '20%', borderTopWidth: 0, borderBottomWidth: 0, justifyContent: 'center', alignItems: 'center' }]}>
+                <Text style={styles.tableCellLabel}>FECHA</Text>
+                <Text style={styles.tableCellValue}>{t(seg.fecha)}</Text>
               </View>
-            </View>
-            <View style={styles.tableRow}>
-              <View style={[styles.tableCol, { width: '20%' }]}></View>
-              <View style={[styles.tableCol, { width: '80%', borderRightWidth: 0 }]}>
-                <Text style={[styles.tableCellLabel, styles.textCenter]}>ACUERDOS / OBSERVACIONES</Text>
-                <Text style={[styles.tableCellValue, { minHeight: 30 }]}>{t(seg.acuerdos)}</Text>
+              {/* Right Column - Two rows */}
+              <View style={{ width: '80%', flexDirection: 'column' }}>
+                <View style={[styles.tableCol, { width: '100%', borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0 }]}>
+                  <Text style={[styles.tableCellLabel, styles.textCenter]}>DESCRIPCION DE SEGUIMIENTO</Text>
+                  <Text style={[styles.tableCellValue, { minHeight: 30 }]}>{t(seg.descripcion)}</Text>
+                </View>
+                <View style={[styles.tableCol, { width: '100%', borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0 }]}>
+                  <Text style={[styles.tableCellLabel, styles.textCenter]}>ACUERDOS / OBSERVACIONES</Text>
+                  <Text style={[styles.tableCellValue, { minHeight: 30 }]}>{t(seg.acuerdos)}</Text>
+                </View>
               </View>
             </View>
           </View>
