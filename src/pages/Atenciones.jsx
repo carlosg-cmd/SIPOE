@@ -37,7 +37,14 @@ export default function Atenciones() {
     try {
       const { data, error } = await supabase
         .from('atenciones')
-        .select('*, estudiantes(*)')
+        .select(`
+          *,
+          estudiantes (
+            nombres,
+            apellidos,
+            documento
+          )
+        `)
         .order('fecha', { ascending: false });
 
       if (error) throw error;
@@ -47,6 +54,19 @@ export default function Atenciones() {
       toast.error('Error al cargar las atenciones');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const eliminarAtencion = async (id) => {
+    if (!window.confirm("¿Estás seguro de eliminar este registro de atención?")) return;
+    try {
+      const { error } = await supabase.from('atenciones').delete().eq('id', id);
+      if (error) throw error;
+      fetchAtenciones();
+      toast.success('Atención eliminada correctamente');
+    } catch (error) {
+      console.error('Error al eliminar:', error);
+      toast.error('Error al eliminar la atención');
     }
   };
 
@@ -250,6 +270,18 @@ export default function Atenciones() {
                           >
                             Editar
                           </Link>
+                        )}
+                        {permisos?.can_edit && (
+                          <button 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              eliminarAtencion(a.id);
+                            }}
+                            className="text-red-600 hover:text-red-900 transition-colors mr-4 font-semibold"
+                            title="Eliminar esta atención"
+                          >
+                            Eliminar
+                          </button>
                         )}
                         <button 
                           onClick={(e) => {
