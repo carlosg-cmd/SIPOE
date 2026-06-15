@@ -60,10 +60,31 @@ export default function Seguimientos() {
   }
 
   async function fetchEstudiantes() {
+    // Primero obtener los IDs únicos de estudiantes que tienen atención
+    const { data: atencionesData } = await supabase
+      .from('atenciones')
+      .select('estudiante_id');
+      
+    if (!atencionesData || atencionesData.length === 0) {
+      setListaEstudiantes([]);
+      return;
+    }
+    
+    // Sacar IDs únicos
+    const idsUnicos = [...new Set(atencionesData.map(a => a.estudiante_id).filter(id => id != null))];
+    
+    if (idsUnicos.length === 0) {
+      setListaEstudiantes([]);
+      return;
+    }
+
+    // Luego buscar solo los estudiantes con esos IDs
     const { data } = await supabase
       .from('estudiantes')
       .select('id, nombres, apellidos, documento, grado, datos_acudiente')
+      .in('id', idsUnicos)
       .order('nombres');
+      
     if (data) setListaEstudiantes(data);
   }
 
