@@ -5,6 +5,7 @@ import { ArrowLeft, Save, UploadCloud, Trash2, AlertTriangle, Image as ImageIcon
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import DictationButton from '../components/DictationButton';
 import { useSync } from '../contexts/SyncContext';
+import Select from 'react-select';
 
 export default function NuevaAtencion() {
   const { session } = useAuth();
@@ -268,17 +269,24 @@ export default function NuevaAtencion() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Estudiante a atender</label>
-              <select
-                required
-                value={formData.estudiante_id}
-                onChange={e => setFormData({...formData, estudiante_id: e.target.value})}
-                className="w-full py-2.5 px-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-gray-800"
-              >
-                <option value="">Buscar y seleccionar estudiante...</option>
-                {listaEstudiantes.map(e => (
-                  <option key={e.id} value={e.id}>{e.nombres} {e.apellidos} - {e.grado}</option>
-                ))}
-              </select>
+              <Select
+                options={listaEstudiantes.map(e => ({ value: e.id, label: `${e.nombres} ${e.apellidos} - ${e.grado}` }))}
+                value={formData.estudiante_id ? { value: formData.estudiante_id, label: listaEstudiantes.find(e => e.id === formData.estudiante_id) ? `${listaEstudiantes.find(e => e.id === formData.estudiante_id).nombres} ${listaEstudiantes.find(e => e.id === formData.estudiante_id).apellidos} - ${listaEstudiantes.find(e => e.id === formData.estudiante_id).grado}` : 'Seleccione estudiante' } : null}
+                onChange={selected => setFormData({...formData, estudiante_id: selected ? selected.value : ''})}
+                placeholder="Buscar estudiante..."
+                isClearable
+                noOptionsMessage={() => "No se encontraron estudiantes"}
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    padding: '0.15rem',
+                    borderRadius: '0.75rem',
+                    borderColor: '#e5e7eb',
+                    boxShadow: 'none',
+                    '&:hover': { borderColor: '#6366f1' }
+                  })
+                }}
+              />
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Sede Educativa</label>

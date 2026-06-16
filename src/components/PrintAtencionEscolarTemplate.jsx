@@ -123,7 +123,11 @@ export default function PrintAtencionEscolarTemplate({ data, onClose }) {
     observaciones: data.observaciones || data.orientaciones || '',
     
     seguimientos: data.seguimientos || Array.from({ length: 4 }, () => ({ fecha: '', descripcion: '', acuerdos: '' })),
-    orientaciones: ''
+    orientaciones: '',
+    
+    fecha_firma_orientador: '',
+    fecha_firma_acudiente: '',
+    fecha_firma_estudiante: ''
   });
 
   const [firmasData, setFirmasData] = useState({
@@ -460,6 +464,25 @@ export default function PrintAtencionEscolarTemplate({ data, onClose }) {
               <h3 className="font-bold text-indigo-800 border-b-2 border-indigo-100 pb-1 text-sm mt-4">ORIENTACIONES Y RECOMENDACIONES</h3>
               <div>
                 <textarea rows={3} value={fields.orientaciones} onChange={e => handleChange('orientaciones', e.target.value)} className={`${inputClass} resize-y`} />
+              </div>
+            </div>
+
+            {/* SECCION 7 */}
+            <div className="space-y-3">
+              <h3 className="font-bold text-indigo-800 border-b-2 border-indigo-100 pb-1 text-sm mt-4">FECHAS DE FIRMAS INDIVIDUALES</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className={labelClass}>Fecha Firma Orientador</label>
+                  <input type="text" value={fields.fecha_firma_orientador} onChange={e => handleChange('fecha_firma_orientador', e.target.value)} className={inputClass} placeholder="DD/MM/AAAA" />
+                </div>
+                <div>
+                  <label className={labelClass}>Fecha Firma Acudiente</label>
+                  <input type="text" value={fields.fecha_firma_acudiente} onChange={e => handleChange('fecha_firma_acudiente', e.target.value)} className={inputClass} placeholder="DD/MM/AAAA" />
+                </div>
+                <div>
+                  <label className={labelClass}>Fecha Firma Estudiante</label>
+                  <input type="text" value={fields.fecha_firma_estudiante} onChange={e => handleChange('fecha_firma_estudiante', e.target.value)} className={inputClass} placeholder="DD/MM/AAAA" />
+                </div>
               </div>
             </div>
 

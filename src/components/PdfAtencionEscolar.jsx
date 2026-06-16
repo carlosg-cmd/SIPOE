@@ -298,6 +298,7 @@ export default function PdfAtencionEscolar({ data, firmas }) {
             )}
             <View style={styles.signatureLine}>
               <Text style={styles.signatureText}>DOCENTE ORIENTADORA</Text>
+              {f.fecha_firma_orientador && <Text style={{ fontSize: 9, marginTop: 2 }}>Fecha: {f.fecha_firma_orientador}</Text>}
             </View>
           </View>
 
@@ -307,6 +308,7 @@ export default function PdfAtencionEscolar({ data, firmas }) {
             )}
             <View style={styles.signatureLine}>
               <Text style={styles.signatureText}>PADRE DE FAMILIA O ACUDIENTE</Text>
+              {f.fecha_firma_acudiente && <Text style={{ fontSize: 9, marginTop: 2 }}>Fecha: {f.fecha_firma_acudiente}</Text>}
             </View>
           </View>
 
@@ -316,6 +318,7 @@ export default function PdfAtencionEscolar({ data, firmas }) {
             )}
             <View style={styles.signatureLine}>
               <Text style={styles.signatureText}>ESTUDIANTE</Text>
+              {f.fecha_firma_estudiante && <Text style={{ fontSize: 9, marginTop: 2 }}>Fecha: {f.fecha_firma_estudiante}</Text>}
             </View>
           </View>
         </View>
