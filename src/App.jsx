@@ -15,6 +15,7 @@ import AsistenteIA from './pages/AsistenteIA';
 import Firmas from './pages/Firmas';
 import Directorios from './pages/Directorios';
 import IntervencionesGrupales from './pages/IntervencionesGrupales';
+import BibliotecaDocumentos from './pages/BibliotecaDocumentos';
 import TestPdf from './pages/TestPdf';
 
 function ProtectedRoute({ children }) {
@@ -65,6 +66,7 @@ function App() {
           <Route path="configuracion" element={<Configuracion />} />
           <Route path="firmas" element={<Firmas />} />
           <Route path="directorios" element={<Directorios />} />
+          <Route path="biblioteca-documentos" element={<BibliotecaDocumentos />} />
           <Route path="test-pdf" element={<TestPdf />} />
         </Route>
         {/* Capturar rutas no encontradas o retornos OAuth y redirigir al home */}

@@ -442,3 +442,20 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
+-- BIBLIOTECA DE DOCUMENTOS
+CREATE TABLE public.documentos_generados (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    atencion_id UUID REFERENCES public.atenciones(id) ON DELETE CASCADE,
+    estudiante_id UUID REFERENCES public.estudiantes(id) ON DELETE CASCADE,
+    orientador_id UUID REFERENCES public.perfiles(id),
+    tipo_formato TEXT NOT NULL,
+    nombre_formato TEXT NOT NULL,
+    nombre_estudiante TEXT,
+    fecha_generacion TIMESTAMPTZ DEFAULT NOW(),
+    datos_snapshot JSONB,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE public.documentos_generados ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "docs_select" ON public.documentos_generados FOR SELECT TO authenticated USING (orientador_id = auth.uid() OR public.get_my_role() = 'Administrador');
+CREATE POLICY "docs_insert" ON public.documentos_generados FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "docs_delete" ON public.documentos_generados FOR DELETE TO authenticated USING (orientador_id = auth.uid() OR public.get_my_role() = 'Administrador');

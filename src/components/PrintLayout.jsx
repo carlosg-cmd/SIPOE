@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { BookOpen } from 'lucide-react';
 
-export default function PrintLayout({ children, title, signatureSize, onClose, data }) {
+
+export default function PrintLayout({ children, title, signatureSize, onClose, onSave, data }) {
   const [footerText, setFooterText] = useState('Al firmar este documento acepta el uso y tratamiento de datos personales de acuerdo a la Ley 1581 del 2012, dicha información será resguardada durante el tiempo que establece la ley.');
   
   // Prevenir scroll en el fondo cuando se abre el modal (eliminado porque cortaba la impresión)
@@ -39,6 +41,15 @@ export default function PrintLayout({ children, title, signatureSize, onClose, d
               >
                 Cancelar
               </button>
+              {onSave && (
+                <button 
+                  onClick={onSave}
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold shadow-md transition-colors flex items-center gap-2"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  Guardar en Biblioteca
+                </button>
+              )}
               <button 
                 onClick={() => window.print()}
                 className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow-md transition-colors"

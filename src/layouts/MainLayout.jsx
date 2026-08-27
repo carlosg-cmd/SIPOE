@@ -1,7 +1,7 @@
 import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../supabase';
-import { LayoutDashboard, Users, FileText, ClipboardList, Settings, LogOut, Menu, Calendar, Bot, PenTool, Contact, Search, CloudOff, Cloud, RefreshCw } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, ClipboardList, Settings, LogOut, Menu, Calendar, Bot, PenTool, Contact, Search, CloudOff, Cloud, RefreshCw, Library } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlobalSearch from '../components/GlobalSearch';
@@ -55,6 +55,7 @@ export default function MainLayout() {
     { name: 'Directorios', path: '/directorios', icon: Contact, visible: permisos?.can_view_estudiantes },
     { name: 'Asistente IA', path: '/ia', icon: Bot, visible: permisos?.can_view_ia },
     { name: 'Historial Firmas', path: '/firmas', icon: PenTool, visible: permisos?.can_edit },
+    { name: 'Biblioteca Docs', path: '/biblioteca-documentos', icon: Library, visible: true },
     { name: 'Configuración', path: '/configuracion', icon: Settings, visible: true },
   ];
 

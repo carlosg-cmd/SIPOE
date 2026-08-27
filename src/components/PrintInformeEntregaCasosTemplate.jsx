@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { PDFViewer } from '@react-pdf/renderer';
-import { X, ArrowLeft, FileText, CheckCircle } from 'lucide-react';
+import { X, ArrowLeft, FileText, CheckCircle, BookOpen } from 'lucide-react';
 import PdfInformeEntregaCasos from './PdfInformeEntregaCasos';
 import { supabase } from '../supabase';
+import { guardarDocumento } from '../hooks/useGuardarDocumento';
+
 
 export default function PrintInformeEntregaCasosTemplate({ data, onClose }) {
   if (!data) return null;
@@ -219,6 +221,13 @@ export default function PrintInformeEntregaCasosTemplate({ data, onClose }) {
               <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
               Vista Previa Dinámica
             </div>
+            <button
+              onClick={() => guardarDocumento(data, 'informe_entrega_casos')}
+              className="flex items-center gap-2 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow transition-colors"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              Guardar en Biblioteca
+            </button>
           </div>
           
           <div className="flex-1 w-full h-full p-0">

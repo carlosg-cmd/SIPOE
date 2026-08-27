@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { PDFViewer } from '@react-pdf/renderer';
-import { X, ArrowLeft, FileText } from 'lucide-react';
+import { X, ArrowLeft, FileText, BookOpen } from 'lucide-react';
 import PdfConsentimiento from './PdfConsentimiento';
 import { supabase } from '../supabase';
+import { guardarDocumento } from '../hooks/useGuardarDocumento';
+
 
 export default function PrintConsentimientoTemplate({ data, onClose }) {
   if (!data) return null;
@@ -420,9 +422,23 @@ export default function PrintConsentimientoTemplate({ data, onClose }) {
             </div>
           ) : (
             /* ========== VISOR PDF ========== */
-            <PDFViewer width="100%" height="100%" className="border-none">
-              <PdfConsentimiento data={buildPdfData()} />
-            </PDFViewer>
+            <div className="flex flex-col h-full">
+              <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 border-b border-slate-200 print:hidden">
+                <button
+                  onClick={() => guardarDocumento(data, 'consentimiento')}
+                  className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold shadow transition-colors"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  Guardar en Biblioteca
+                </button>
+                <span className="text-xs text-slate-500">También puedes descargar o imprimir desde los controles del visor PDF</span>
+              </div>
+              <div className="flex-1">
+                <PDFViewer width="100%" height="100%" className="border-none">
+                  <PdfConsentimiento data={buildPdfData()} />
+                </PDFViewer>
+              </div>
+            </div>
           )}
         </div>
       </div>

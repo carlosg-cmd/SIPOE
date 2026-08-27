@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { PDFViewer } from '@react-pdf/renderer';
-import { X, ArrowLeft, FileText } from 'lucide-react';
+import { X, ArrowLeft, FileText, BookOpen } from 'lucide-react';
 import PdfIntervencionesGrupales from './PdfIntervencionesGrupales';
+import { guardarDocumento } from '../hooks/useGuardarDocumento';
+
 
 export default function PrintIntervencionesGrupalesTemplate({ data, onClose }) {
   if (!data) return null;
@@ -112,6 +114,13 @@ export default function PrintIntervencionesGrupalesTemplate({ data, onClose }) {
               <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
               Vista Previa Dinámica
             </div>
+            <button
+              onClick={() => guardarDocumento(data, 'intervencion_grupal')}
+              className="flex items-center gap-2 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow transition-colors"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              Guardar en Biblioteca
+            </button>
           </div>
           
           <div className="flex-1 w-full h-full p-0">

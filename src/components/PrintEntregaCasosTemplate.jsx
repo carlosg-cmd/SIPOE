@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PrintLayout from './PrintLayout';
+import { guardarDocumento } from '../hooks/useGuardarDocumento';
 
 export default function PrintEntregaCasosTemplate({ data, onClose }) {
   const [signatureSize, setSignatureSize] = useState(150);
@@ -27,6 +28,7 @@ export default function PrintEntregaCasosTemplate({ data, onClose }) {
     <PrintLayout 
       title="INFORME PARA ENTREGA DE CASOS"
       onClose={onClose}
+      onSave={() => guardarDocumento(data, 'informe_entrega_casos')}
       data={data}
       signatureSize={{ value: signatureSize, onChange: setSignatureSize }}
     >

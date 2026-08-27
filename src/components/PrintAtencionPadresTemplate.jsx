@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { PDFViewer } from '@react-pdf/renderer';
-import { X, ArrowLeft, FileText, Download } from 'lucide-react';
+import { X, ArrowLeft, FileText, Download, BookOpen } from 'lucide-react';
 import PdfAtencionPadres from './PdfAtencionPadres';
 import { supabase } from '../supabase';
+import { guardarDocumento } from '../hooks/useGuardarDocumento';
+
 
 export default function PrintAtencionPadresTemplate({ data, onClose }) {
   if (!data) return null;
@@ -277,6 +279,13 @@ export default function PrintAtencionPadresTemplate({ data, onClose }) {
             <span className="px-2 py-1 bg-slate-700 rounded text-xs text-slate-300">Acta de Atención a Padres</span>
           </div>
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => guardarDocumento(data, 'padres_acudientes')}
+              className="flex items-center gap-2 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow transition-colors"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              Guardar en Biblioteca
+            </button>
             <button 
               onClick={() => setEditMode(!editMode)}
               className="text-sm text-slate-300 hover:text-white transition-colors"

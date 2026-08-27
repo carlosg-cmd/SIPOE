@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { PDFViewer } from '@react-pdf/renderer';
-import { X, ArrowLeft, FileText } from 'lucide-react';
+import { X, ArrowLeft, FileText, BookOpen } from 'lucide-react';
 import PdfRemisionEntidades from './PdfRemisionEntidades';
 import { supabase } from '../supabase';
+import { guardarDocumento } from '../hooks/useGuardarDocumento';
+
 
 export default function PrintRemisionEntidadesTemplate({ data, onClose }) {
   if (!data) return null;
@@ -239,6 +241,14 @@ export default function PrintRemisionEntidadesTemplate({ data, onClose }) {
           </button>
           <div className="w-px h-4 bg-gray-300"></div>
           <span className="text-sm font-semibold text-gray-800">Vista Previa Dinámica</span>
+          <div className="w-px h-4 bg-gray-300"></div>
+          <button
+            onClick={() => guardarDocumento(data, 'remision_entidades')}
+            className="flex items-center gap-2 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow transition-colors"
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            Guardar en Biblioteca
+          </button>
         </div>
 
         <PDFViewer width="100%" height="100%" className="border-0">
