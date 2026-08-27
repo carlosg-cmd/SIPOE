@@ -110,10 +110,10 @@ export default function IntervencionesGrupales() {
     e.preventDefault();
     if (isSubmitting) return;
 
-    const gradoFinal = (formData.grado === 'Otro' ? formData.grado_custom : formData.grado).trim();
+    const gradoFinal = formData.grado.trim();
 
     if (!gradoFinal) {
-      toast.error('Por favor especifica o selecciona el grado o grupo');
+      toast.error('Por favor especifica el grado o grupo');
       return;
     }
     if (!formData.tematica.trim()) {
@@ -189,12 +189,9 @@ export default function IntervencionesGrupales() {
       obs = parts[1] || '';
     }
 
-    const esGradoConocido = LISTA_GRADOS.includes(item.grado);
-
     setFormData({
       fecha: item.fecha || new Date().toISOString().split('T')[0],
-      grado: esGradoConocido ? item.grado : 'Otro',
-      grado_custom: esGradoConocido ? '' : (item.grado || ''),
+      grado: item.grado || '',
       jornada: (item.jornada && item.jornada.toUpperCase().includes('TARDE')) ? 'TARDE' : 'MAÑANA',
       docente_titular: item.docente_titular || '',
       tematica: item.tematica || '',
@@ -506,26 +503,18 @@ export default function IntervencionesGrupales() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Grado / Grupo *</label>
-                  <select
+                  <input
                     required
+                    type="text"
+                    list="grados-list"
                     value={formData.grado}
                     onChange={e => setFormData({ ...formData, grado: e.target.value })}
                     className="w-full py-2.5 px-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-800 dark:text-white text-sm font-semibold"
-                  >
-                    {LISTA_GRADOS.map(g => (
-                      <option key={g} value={g}>{g}</option>
-                    ))}
-                  </select>
-                  {formData.grado === 'Otro' && (
-                    <input
-                      type="text"
-                      required
-                      placeholder="Escribe el grado o grupo..."
-                      value={formData.grado_custom}
-                      onChange={e => setFormData({ ...formData, grado_custom: e.target.value })}
-                      className="mt-2 w-full py-2 px-3 bg-white dark:bg-slate-900 border border-indigo-300 dark:border-indigo-700 rounded-xl outline-none text-sm text-slate-800 dark:text-white"
-                    />
-                  )}
+                    placeholder="Escribe el grado o grupo (Ej: 6°1, 11°A, Padres...)"
+                  />
+                  <datalist id="grados-list">
+                    {LISTA_GRADOS.map(g => <option key={g} value={g} />)}
+                  </datalist>
                 </div>
 
                 <div>
