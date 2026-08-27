@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { Users, Search, Plus, Calendar, Clock, BookOpen, FileText, Printer, Trash2, Edit3, X, Loader2, Sparkles, UserCheck, Layers, Award } from 'lucide-react';
+import { Users, Search, Plus, Calendar, Clock, BookOpen, FileText, Printer, Trash2, Edit3, X, Loader2, Sparkles, UserCheck, Layers, Award, MessageSquare } from 'lucide-react';
 import toast from 'react-hot-toast';
 import DictationButton from '../components/DictationButton';
 import { useSync } from '../contexts/SyncContext';
 import PrintIntervencionesGrupalesTemplate from '../components/PrintIntervencionesGrupalesTemplate';
 
-const GRADOS_SUGERIDOS = [
-  'Transición', '1°', '2°', '3°', '4°', '5°',
+const LISTA_GRADOS = [
+  'Transición',
+  '1°', '2°', '3°', '4°', '5°',
   '6°1', '6°2', '7°1', '7°2', '8°1', '8°2',
-  '9°1', '9°2', '10°1', '10°2', '11°1', '11°2'
+  '9°1', '9°2', '10°1', '10°2', '11°1', '11°2',
+  'Padres de Familia', 'Docentes / Directivos', 'Comunidad General', 'Otro'
 ];
 
 const TEMATICAS_SUGERIDAS = [
@@ -24,17 +26,40 @@ const TEMATICAS_SUGERIDAS = [
   'Taller de Padres y Pautas de Crianza'
 ];
 
+const DURACIONES_OPCIONES = [
+  { label: '30 minutos (0.5 hora)', value: 30 },
+  { label: '45 minutos', value: 45 },
+  { label: '60 minutos (1 hora)', value: 60 },
+  { label: '90 minutos (1.5 horas)', value: 90 },
+  { label: '120 minutos (2 horas)', value: 120 },
+  { label: '180 minutos (3 horas)', value: 180 }
+];
+
+const parseDuracionMinutos = (val) => {
+  if (typeof val === 'number' && !isNaN(val)) return val;
+  if (!val) return 60;
+  const str = String(val).toLowerCase();
+  if (str.includes('1.5') || str.includes('hora y media')) return 90;
+  if (str.includes('2') && str.includes('hora')) return 120;
+  if (str.includes('3') && str.includes('hora')) return 180;
+  if (str.includes('1') && str.includes('hora')) return 60;
+  const match = str.match(/\d+/);
+  return match ? parseInt(match[0], 10) : 60;
+};
+
 const initialForm = {
   fecha: new Date().toISOString().split('T')[0],
-  grado: '',
+  grado: '6°1',
+  grado_custom: '',
   jornada: 'MAÑANA',
   docente_titular: '',
   tematica: '',
   motivo: '',
-  duracion_minutos: '60 min',
+  duracion_minutos: 60,
   nombre_actividad: '',
   objetivo: '',
   descripcion: '',
+  observaciones: '',
   recursos: 'Videobeam, papelería, fichas didácticas'
 };
 
@@ -85,8 +110,10 @@ export default function IntervencionesGrupales() {
     e.preventDefault();
     if (isSubmitting) return;
 
-    if (!formData.grado.trim()) {
-      toast.error('Por favor especifica el grado o grupo');
+    const gradoFinal = (formData.grado === 'Otro' ? formData.grado_custom : formData.grado).trim();
+
+    if (!gradoFinal) {
+      toast.error('Por favor especifica o selecciona el grado o grupo');
       return;
     }
     if (!formData.tematica.trim()) {
@@ -96,8 +123,30 @@ export default function IntervencionesGrupales() {
 
     setIsSubmitting(true);
 
+    const duracionInt = parseDuracionMinutos(formData.duracion_minutos);
+
+    // Combinar descripcion y observaciones de manera limpia si aplica
+    let descripcionFinal = (formData.descripcion || '').trim();
+    if (formData.observaciones && formData.observaciones.trim()) {
+      if (descripcionFinal) {
+        descripcionFinal += `\n\n[OBSERVACIONES]:\n${formData.observaciones.trim()}`;
+      } else {
+        descripcionFinal = formData.observaciones.trim();
+      }
+    }
+
     const payload = {
-      ...formData,
+      fecha: formData.fecha,
+      grado: gradoFinal,
+      jornada: formData.jornada || 'MAÑANA',
+      docente_titular: formData.docente_titular || '',
+      tematica: formData.tematica || '',
+      motivo: formData.motivo || '',
+      duracion_minutos: duracionInt,
+      nombre_actividad: formData.nombre_actividad || '',
+      objetivo: formData.objetivo || '',
+      descripcion: descripcionFinal,
+      recursos: formData.recursos || '',
       responsable: session?.user?.id
     };
 
@@ -120,6 +169,7 @@ export default function IntervencionesGrupales() {
       setFormData(initialForm);
       fetchIntervenciones();
     } catch (err) {
+      console.error('Error saving intervencion:', err);
       toast.error('Error al guardar: ' + err.message);
     } finally {
       setIsSubmitting(false);
@@ -129,17 +179,31 @@ export default function IntervencionesGrupales() {
   const handleEdit = (item) => {
     setEditingId(item.id);
     setIsEditing(true);
+
+    // Extraer observaciones si estaban anexadas en descripcion
+    let desc = item.descripcion || '';
+    let obs = '';
+    if (desc.includes('\n\n[OBSERVACIONES]:\n')) {
+      const parts = desc.split('\n\n[OBSERVACIONES]:\n');
+      desc = parts[0];
+      obs = parts[1] || '';
+    }
+
+    const esGradoConocido = LISTA_GRADOS.includes(item.grado);
+
     setFormData({
       fecha: item.fecha || new Date().toISOString().split('T')[0],
-      grado: item.grado || '',
-      jornada: item.jornada || 'MAÑANA',
+      grado: esGradoConocido ? item.grado : 'Otro',
+      grado_custom: esGradoConocido ? '' : (item.grado || ''),
+      jornada: (item.jornada && item.jornada.toUpperCase().includes('TARDE')) ? 'TARDE' : 'MAÑANA',
       docente_titular: item.docente_titular || '',
       tematica: item.tematica || '',
       motivo: item.motivo || '',
-      duracion_minutos: item.duracion_minutos || '60 min',
+      duracion_minutos: parseDuracionMinutos(item.duracion_minutos),
       nombre_actividad: item.nombre_actividad || '',
       objetivo: item.objetivo || '',
-      descripcion: item.descripcion || '',
+      descripcion: desc,
+      observaciones: obs,
       recursos: item.recursos || ''
     });
     setShowModal(true);
@@ -306,97 +370,113 @@ export default function IntervencionesGrupales() {
 
                   {/* Lista de Intervenciones del Grupo */}
                   <div className="divide-y divide-slate-100 dark:divide-slate-700/60">
-                    {items.map((item) => (
-                      <div key={item.id} className="p-6 hover:bg-slate-50/50 dark:hover:bg-slate-700/20 transition-colors">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-3">
-                          <div>
-                            <div className="flex items-center gap-2 flex-wrap mb-1">
-                              <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2.5 py-1 rounded-lg flex items-center gap-1">
-                                <Calendar className="w-3.5 h-3.5" />
-                                {item.fecha}
-                              </span>
-                              {item.jornada && (
-                                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 px-2.5 py-1 rounded-lg">
-                                  Jornada {item.jornada}
+                    {items.map((item) => {
+                      let desc = item.descripcion || '';
+                      let obs = '';
+                      if (desc.includes('\n\n[OBSERVACIONES]:\n')) {
+                        const parts = desc.split('\n\n[OBSERVACIONES]:\n');
+                        desc = parts[0];
+                        obs = parts[1] || '';
+                      }
+
+                      return (
+                        <div key={item.id} className="p-6 hover:bg-slate-50/50 dark:hover:bg-slate-700/20 transition-colors">
+                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-3">
+                            <div>
+                              <div className="flex items-center gap-2 flex-wrap mb-1">
+                                <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                  <Calendar className="w-3.5 h-3.5" />
+                                  {item.fecha}
                                 </span>
-                              )}
-                              {item.duracion_minutos && (
-                                <span className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                                  <Clock className="w-3.5 h-3.5" />
-                                  {item.duracion_minutos}
-                                </span>
+                                {item.jornada && (
+                                  <span className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 px-2.5 py-1 rounded-lg">
+                                    Jornada {item.jornada}
+                                  </span>
+                                )}
+                                {item.duracion_minutos && (
+                                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                                    <Clock className="w-3.5 h-3.5" />
+                                    {item.duracion_minutos} min
+                                  </span>
+                                )}
+                              </div>
+                              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                                {item.nombre_actividad || item.tematica}
+                              </h3>
+                              <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-300 mt-0.5">
+                                Temática: {item.tematica}
+                              </p>
+                            </div>
+
+                            {/* Acciones */}
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => setPrintData(item)}
+                                className="inline-flex items-center px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-300 rounded-xl text-xs font-bold transition-colors"
+                                title="Exportar PDF / Imprimir"
+                              >
+                                <Printer className="w-4 h-4 mr-1.5" />
+                                PDF
+                              </button>
+                              {permisos?.can_edit && (
+                                <>
+                                  <button
+                                    onClick={() => handleEdit(item)}
+                                    className="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"
+                                    title="Editar"
+                                  >
+                                    <Edit3 className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDelete(item.id, item.nombre_actividad || item.tematica)}
+                                    className="p-2 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"
+                                    title="Eliminar"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </>
                               )}
                             </div>
-                            <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                              {item.nombre_actividad || item.tematica}
-                            </h3>
-                            <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-300 mt-0.5">
-                              Temática: {item.tematica}
-                            </p>
                           </div>
 
-                          {/* Acciones */}
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => setPrintData(item)}
-                              className="inline-flex items-center px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-300 rounded-xl text-xs font-bold transition-colors"
-                              title="Exportar PDF / Imprimir"
-                            >
-                              <Printer className="w-4 h-4 mr-1.5" />
-                              PDF
-                            </button>
-                            {permisos?.can_edit && (
-                              <>
-                                <button
-                                  onClick={() => handleEdit(item)}
-                                  className="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"
-                                  title="Editar"
-                                >
-                                  <Edit3 className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() => handleDelete(item.id, item.nombre_actividad || item.tematica)}
-                                  className="p-2 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"
-                                  title="Eliminar"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </>
+                          {/* Detalles de la intervención */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mt-3 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700/60">
+                            <div>
+                              <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Docente Titular:</span>
+                              <p className="text-slate-600 dark:text-slate-400">{item.docente_titular || 'No especificado'}</p>
+                            </div>
+                            <div>
+                              <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Motivo:</span>
+                              <p className="text-slate-600 dark:text-slate-400">{item.motivo || 'No especificado'}</p>
+                            </div>
+                            {item.objetivo && (
+                              <div className="md:col-span-2">
+                                <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Objetivo de la Actividad:</span>
+                                <p className="text-slate-600 dark:text-slate-400 whitespace-pre-wrap">{item.objetivo}</p>
+                              </div>
+                            )}
+                            {desc && (
+                              <div className="md:col-span-2">
+                                <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Desarrollo del Encuentro:</span>
+                                <p className="text-slate-600 dark:text-slate-400 whitespace-pre-wrap">{desc}</p>
+                              </div>
+                            )}
+                            {obs && (
+                              <div className="md:col-span-2 bg-amber-50/60 dark:bg-amber-900/20 p-3 rounded-lg border border-amber-200/50 dark:border-amber-800/40">
+                                <span className="font-bold text-amber-900 dark:text-amber-300 block mb-1">Observaciones adicionales:</span>
+                                <p className="text-amber-800 dark:text-amber-200 whitespace-pre-wrap">{obs}</p>
+                              </div>
+                            )}
+                            {item.recursos && (
+                              <div className="md:col-span-2">
+                                <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Recursos Utilizados:</span>
+                                <p className="text-slate-500 dark:text-slate-400 italic">{item.recursos}</p>
+                              </div>
                             )}
                           </div>
                         </div>
-
-                        {/* Detalles de la intervención */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mt-3 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700/60">
-                          <div>
-                            <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Docente Titular:</span>
-                            <p className="text-slate-600 dark:text-slate-400">{item.docente_titular || 'No especificado'}</p>
-                          </div>
-                          <div>
-                            <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Motivo:</span>
-                            <p className="text-slate-600 dark:text-slate-400">{item.motivo || 'No especificado'}</p>
-                          </div>
-                          {item.objetivo && (
-                            <div className="md:col-span-2">
-                              <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Objetivo de la Actividad:</span>
-                              <p className="text-slate-600 dark:text-slate-400 whitespace-pre-wrap">{item.objetivo}</p>
-                            </div>
-                          )}
-                          {item.descripcion && (
-                            <div className="md:col-span-2">
-                              <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Desarrollo del Encuentro:</span>
-                              <p className="text-slate-600 dark:text-slate-400 whitespace-pre-wrap">{item.descripcion}</p>
-                            </div>
-                          )}
-                          {item.recursos && (
-                            <div className="md:col-span-2">
-                              <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Recursos Utilizados:</span>
-                              <p className="text-slate-500 dark:text-slate-400 italic">{item.recursos}</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               );
@@ -426,32 +506,37 @@ export default function IntervencionesGrupales() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Grado / Grupo *</label>
-                  <input
+                  <select
                     required
-                    type="text"
-                    list="grados-list"
                     value={formData.grado}
                     onChange={e => setFormData({ ...formData, grado: e.target.value })}
-                    className="w-full py-2.5 px-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-800 dark:text-white text-sm"
-                    placeholder="Ej. 6°1, 11°A"
-                  />
-                  <datalist id="grados-list">
-                    {GRADOS_SUGERIDOS.map(g => <option key={g} value={g} />)}
-                  </datalist>
+                    className="w-full py-2.5 px-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-800 dark:text-white text-sm font-semibold"
+                  >
+                    {LISTA_GRADOS.map(g => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
+                  {formData.grado === 'Otro' && (
+                    <input
+                      type="text"
+                      required
+                      placeholder="Escribe el grado o grupo..."
+                      value={formData.grado_custom}
+                      onChange={e => setFormData({ ...formData, grado_custom: e.target.value })}
+                      className="mt-2 w-full py-2 px-3 bg-white dark:bg-slate-900 border border-indigo-300 dark:border-indigo-700 rounded-xl outline-none text-sm text-slate-800 dark:text-white"
+                    />
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Jornada</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Jornada *</label>
                   <select
                     value={formData.jornada}
                     onChange={e => setFormData({ ...formData, jornada: e.target.value })}
-                    className="w-full py-2.5 px-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-800 dark:text-white text-sm font-medium"
+                    className="w-full py-2.5 px-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-800 dark:text-white text-sm font-bold"
                   >
                     <option value="MAÑANA">MAÑANA</option>
                     <option value="TARDE">TARDE</option>
-                    <option value="NOCHE">NOCHE</option>
-                    <option value="SABATINA">SABATINA</option>
-                    <option value="UNICA">ÚNICA</option>
                   </select>
                 </div>
 
@@ -481,14 +566,16 @@ export default function IntervencionesGrupales() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Duración de la sesión</label>
-                  <input
-                    type="text"
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Duración de la sesión *</label>
+                  <select
                     value={formData.duracion_minutos}
-                    onChange={e => setFormData({ ...formData, duracion_minutos: e.target.value })}
-                    className="w-full py-2.5 px-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-800 dark:text-white text-sm"
-                    placeholder="Ej. 60 min, 2 horas"
-                  />
+                    onChange={e => setFormData({ ...formData, duracion_minutos: Number(e.target.value) })}
+                    className="w-full py-2.5 px-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-800 dark:text-white text-sm font-semibold"
+                  >
+                    {DURACIONES_OPCIONES.map(d => (
+                      <option key={d.value} value={d.value}>{d.label}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -565,6 +652,26 @@ export default function IntervencionesGrupales() {
                   onChange={e => setFormData({ ...formData, descripcion: e.target.value })}
                   className="w-full py-2.5 px-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-800 dark:text-white text-sm"
                   placeholder="Resumen del desarrollo de la sesión, dinámica de grupo y reflexiones..."
+                />
+              </div>
+
+              {/* Observaciones con Dictado por Voz */}
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                    <MessageSquare className="w-3.5 h-3.5 text-amber-500" />
+                    Observaciones y Acuerdos
+                  </label>
+                  <DictationButton
+                    onAppendText={(text) => setFormData(prev => ({ ...prev, observaciones: prev.observaciones + (prev.observaciones.endsWith(' ') ? '' : ' ') + text }))}
+                  />
+                </div>
+                <textarea
+                  rows="2"
+                  value={formData.observaciones}
+                  onChange={e => setFormData({ ...formData, observaciones: e.target.value })}
+                  className="w-full py-2.5 px-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-800 dark:text-white text-sm"
+                  placeholder="Anota observaciones particulares, compromisos del grupo o notas del orientador..."
                 />
               </div>
 
