@@ -15,6 +15,7 @@ import AsistenteIA from './pages/AsistenteIA';
 import Firmas from './pages/Firmas';
 import Directorios from './pages/Directorios';
 import IntervencionesGrupales from './pages/IntervencionesGrupales';
+import TestPdf from './pages/TestPdf';
 
 function ProtectedRoute({ children }) {
   const { session, loading } = useAuth();
