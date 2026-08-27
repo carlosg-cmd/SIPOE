@@ -120,7 +120,12 @@ export default function PrintRemisionCoordinacionTemplate({ data, onClose }) {
   const inputClass = "w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-xs text-gray-800 p-1.5 border bg-white";
   const labelClass = "block text-xs font-semibold text-gray-600 mb-1";
 
-  const buildPdfData = () => ({ ...fields });
+  const buildPdfData = () => {
+    if (Array.isArray(data?._snapshots) && data._snapshots.length > 1) {
+      return data._snapshots;
+    }
+    return { ...fields };
+  };
 
   const getFirmasList = () => {
     return [

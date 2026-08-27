@@ -90,9 +90,14 @@ const Header = () => (
 );
 
 export default function PdfRemisionEntidades({ data, firmas }) {
+  const dataArray = Array.isArray(data) ? data : [data || {}];
+
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      {dataArray.map((item, index) => {
+  return (
+          <React.Fragment key={index}>
+            <Page size="A4" style={styles.page}>
         <Header />
         
         {/* INSTITUCION */}
@@ -220,6 +225,9 @@ export default function PdfRemisionEntidades({ data, firmas }) {
         </View>
 
       </Page>
+          </React.Fragment>
+        );
+      })}
     </Document>
   );
 }

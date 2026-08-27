@@ -101,85 +101,90 @@ const Header = () => (
 );
 
 export default function PdfIntervencionesGrupales({ data }) {
-  const f = data || {};
+  const dataArray = Array.isArray(data) ? data : [data || {}];
   const t = (val) => (val === undefined || val === null || val === '' ? ' ' : String(val));
   
   return (
     <Document>
-      <Page size="LETTER" style={styles.page}>
-        <Header />
+      {dataArray.map((item, index) => {
+        const f = item || {};
+        return (
+          <Page key={index} size="LETTER" style={styles.page}>
+            <Header />
 
-        <View style={styles.table}>
-          {/* TITULO */}
-          <View style={styles.tableTitleRow}>
-            <Text style={styles.tableTitle}>INTERVENCIONES GRUPALES</Text>
-          </View>
+            <View style={styles.table}>
+              {/* TITULO */}
+              <View style={styles.tableTitleRow}>
+                <Text style={styles.tableTitle}>INTERVENCIONES GRUPALES</Text>
+              </View>
 
-          {/* FILA 1 */}
-          <View style={styles.tableRow}>
-            <View style={[styles.cellLabel, { width: '15%' }]}><Text>FECHA:</Text></View>
-            <View style={[styles.cellValue, { width: '25%' }]}><Text>{t(f.fecha)}</Text></View>
-            <View style={[styles.cellLabel, { width: '15%' }]}><Text>GRADO:</Text></View>
-            <View style={[styles.cellValue, { width: '20%' }]}><Text>{t(f.grado)}</Text></View>
-            <View style={[styles.cellLabel, { width: '15%' }]}><Text>JORNADA:</Text></View>
-            <View style={[styles.cellValueLast, { width: '10%' }]}><Text>{t(f.jornada)}</Text></View>
-          </View>
+              {/* FILA 1 */}
+              <View style={styles.tableRow}>
+                <View style={[styles.cellLabel, { width: '15%' }]}><Text>FECHA:</Text></View>
+                <View style={[styles.cellValue, { width: '25%' }]}><Text>{t(f.fecha)}</Text></View>
+                <View style={[styles.cellLabel, { width: '15%' }]}><Text>GRADO:</Text></View>
+                <View style={[styles.cellValue, { width: '20%' }]}><Text>{t(f.grado)}</Text></View>
+                <View style={[styles.cellLabel, { width: '15%' }]}><Text>JORNADA:</Text></View>
+                <View style={[styles.cellValueLast, { width: '10%' }]}><Text>{t(f.jornada)}</Text></View>
+              </View>
 
-          {/* FILA 2 */}
-          <View style={styles.tableRow}>
-            <View style={[styles.cellLabel, { width: '20%' }]}><Text>DOCENTE TITULAR:</Text></View>
-            <View style={[styles.cellValue, { width: '45%' }]}><Text>{t(f.docente_titular)}</Text></View>
-            <View style={[styles.cellLabel, { width: '15%' }]}><Text>TEMATICA:</Text></View>
-            <View style={[styles.cellValueLast, { width: '20%' }]}><Text>{t(f.tematica)}</Text></View>
-          </View>
+              {/* FILA 2 */}
+              <View style={styles.tableRow}>
+                <View style={[styles.cellLabel, { width: '20%' }]}><Text>DOCENTE TITULAR:</Text></View>
+                <View style={[styles.cellValue, { width: '45%' }]}><Text>{t(f.docente_titular)}</Text></View>
+                <View style={[styles.cellLabel, { width: '15%' }]}><Text>TEMATICA:</Text></View>
+                <View style={[styles.cellValueLast, { width: '20%' }]}><Text>{t(f.tematica)}</Text></View>
+              </View>
 
-          {/* FILA 3 */}
-          <View style={styles.tableRow}>
-            <View style={[styles.cellLabel, { width: '20%' }]}><Text>MOTIVO:</Text></View>
-            <View style={[styles.cellValue, { width: '45%' }]}><Text>{t(f.motivo)}</Text></View>
-            <View style={[styles.cellLabel, { width: '15%' }]}><Text>DURACIÓN:</Text></View>
-            <View style={[styles.cellValueLast, { width: '20%' }]}><Text>{t(f.duracion)}</Text></View>
-          </View>
+              {/* FILA 3 */}
+              <View style={styles.tableRow}>
+                <View style={[styles.cellLabel, { width: '20%' }]}><Text>MOTIVO:</Text></View>
+                <View style={[styles.cellValue, { width: '45%' }]}><Text>{t(f.motivo)}</Text></View>
+                <View style={[styles.cellLabel, { width: '15%' }]}><Text>DURACIÓN:</Text></View>
+                <View style={[styles.cellValueLast, { width: '20%' }]}><Text>{t(f.duracion)}</Text></View>
+              </View>
 
-          {/* FILA 4 */}
-          <View style={styles.tableRow}>
-            <View style={[styles.cellLabel, { width: '20%' }]}><Text>NOMBRE DE LA{"\n"}ACTIVIDAD:</Text></View>
-            <View style={[styles.cellValueLast, { width: '80%' }]}><Text>{t(f.nombre_actividad)}</Text></View>
-          </View>
+              {/* FILA 4 */}
+              <View style={styles.tableRow}>
+                <View style={[styles.cellLabel, { width: '20%' }]}><Text>NOMBRE DE LA{"\n"}ACTIVIDAD:</Text></View>
+                <View style={[styles.cellValueLast, { width: '80%' }]}><Text>{t(f.nombre_actividad)}</Text></View>
+              </View>
 
-          {/* FILA 5 */}
-          <View style={styles.tableRow}>
-            <View style={[styles.cellLabel, { width: '20%' }]}><Text>OBJETIVO:</Text></View>
-            <View style={[styles.cellValueLast, { width: '80%', minHeight: 40 }]}><Text>{t(f.objetivo)}</Text></View>
-          </View>
+              {/* FILA 5 */}
+              <View style={styles.tableRow}>
+                <View style={[styles.cellLabel, { width: '20%' }]}><Text>OBJETIVO:</Text></View>
+                <View style={[styles.cellValueLast, { width: '80%', minHeight: 40 }]}><Text>{t(f.objetivo)}</Text></View>
+              </View>
 
-          {/* FILA 6 - GREY SEPARATOR */}
-          <View style={styles.greyRow}></View>
+              {/* FILA 6 - GREY SEPARATOR */}
+              <View style={styles.greyRow}></View>
 
-          {/* FILA 7 */}
-          <View style={styles.tableRow}>
-            <View style={[styles.cellLabel, { width: '20%' }]}><Text>DESCRIPCIÓN DEL ENCUENTRO</Text></View>
-            <View style={[styles.cellValueLast, { width: '80%', minHeight: 80 }]}><Text>{t(f.descripcion_encuentro)}</Text></View>
-          </View>
+              {/* FILA 7 */}
+              <View style={styles.tableRow}>
+                <View style={[styles.cellLabel, { width: '20%' }]}><Text>DESCRIPCIÓN DEL ENCUENTRO</Text></View>
+                <View style={[styles.cellValueLast, { width: '80%', minHeight: 80 }]}><Text>{t(f.descripcion_encuentro)}</Text></View>
+              </View>
 
-          {/* FILA 8 */}
-          <View style={styles.tableRow}>
-            <View style={[styles.cellLabel, { width: '20%' }]}><Text>RECURSOS</Text></View>
-            <View style={[styles.cellValueLast, { width: '80%', minHeight: 40 }]}><Text>{t(f.recursos)}</Text></View>
-          </View>
+              {/* FILA 8 */}
+              <View style={styles.tableRow}>
+                <View style={[styles.cellLabel, { width: '20%' }]}><Text>RECURSOS</Text></View>
+                <View style={[styles.cellValueLast, { width: '80%', minHeight: 40 }]}><Text>{t(f.recursos)}</Text></View>
+              </View>
 
-          {/* FILA 9 */}
-          <View style={styles.tableRowNoBottomBorder}>
-            <View style={[styles.cellLabel, { width: '20%' }]}><Text>RESPONSABLES</Text></View>
-            <View style={[styles.cellValueLast, { width: '80%' }]}><Text>{t(f.responsables)}</Text></View>
-          </View>
-        </View>
+              {/* FILA 9 */}
+              <View style={styles.tableRowNoBottomBorder}>
+                <View style={[styles.cellLabel, { width: '20%' }]}><Text>RESPONSABLES</Text></View>
+                <View style={[styles.cellValueLast, { width: '80%' }]}><Text>{t(f.responsables)}</Text></View>
+              </View>
+            </View>
 
-        <View style={styles.footerContainer}>
-          <Text style={styles.footerText}>RESPONSABLE: MELISSA NUÑEZ SUAREZ</Text>
-          <Text style={styles.footerText}>DOCENTE ORIENTADORA</Text>
-        </View>
-      </Page>
+            <View style={styles.footerContainer}>
+              <Text style={styles.footerText}>RESPONSABLE: MELISSA NUÑEZ SUAREZ</Text>
+              <Text style={styles.footerText}>DOCENTE ORIENTADORA</Text>
+            </View>
+          </Page>
+        );
+      })}
     </Document>
   );
 }

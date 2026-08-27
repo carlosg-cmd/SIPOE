@@ -225,163 +225,152 @@ const Footer = () => (
    COMPONENTE PRINCIPAL DEL PDF
    ============================================================ */
 export default function PdfAtencionPadres({ data }) {
-  const est = data?.estudiantes || {};
-  
-  const studentName = `${est.nombres || ''} ${est.apellidos || ''}`.trim();
-  const gradoStr = est.grado || '';
-  
-  const firmas = data?.firmas || {};
+  const dataArray = Array.isArray(data) ? data : [data || {}];
 
   return (
     <Document>
-      <Page size="LETTER" style={styles.page} wrap>
-        <Header />
-        
-        {/* TABLA GLOBAL ENVOLVENTE */}
-        <View style={styles.tableContainer}>
-          
-          {/* TÍTULO */}
-          <View style={styles.sectionTitleRow}>
-            <Text style={styles.sectionTitleText}>ACTA DE ATENCIÓN A PADRES</Text>
-          </View>
+      {dataArray.map((item, index) => {
+        const est = item?.estudiantes || {};
+        const studentName = `${est.nombres || ''} ${est.apellidos || ''}`.trim();
+        const gradoStr = est.grado || '';
+        const firmas = item?.firmas || {};
 
-          {/* FILA: FECHA */}
-          <View style={styles.tableRow}>
-            <View style={styles.tableHeaderCol}>
-              <Text>FECHA</Text>
-            </View>
-            <View style={styles.tableDataCol}>
-              <Text>{data?.fecha || ''}</Text>
-            </View>
-          </View>
-
-          {/* FILA: LUGAR */}
-          <View style={styles.tableRow}>
-            <View style={styles.tableHeaderCol}>
-              <Text>LUGAR</Text>
-            </View>
-            <View style={styles.tableDataCol}>
-              <Text>{data?.lugar || 'ORIENTACIÓN ESCOLAR'}</Text>
-            </View>
-          </View>
-
-          {/* FILA: RESPONSABLE */}
-          <View style={styles.tableRow}>
-            <View style={styles.tableHeaderCol}>
-              <Text>RESPONSABLE</Text>
-            </View>
-            <View style={styles.tableDataCol}>
-              <Text>{data?.nombre_orientador || ''}</Text>
-            </View>
-          </View>
-
-          {/* FILA: ACUDIENTE(S) */}
-          <View style={styles.tableRow}>
-            <View style={styles.tableHeaderCol}>
-              <Text>ACUDIENTE(S)</Text>
-            </View>
-            <View style={styles.tableDataCol}>
-              <Text>{data?.nombre_acudiente || ''}</Text>
-            </View>
-          </View>
-
-          {/* FILA: ESTUDIANTE / GRADO */}
-          <View style={styles.tableRow}>
-            <View style={styles.tableHeaderCol}>
-              <Text>ESTUDIANTE</Text>
-            </View>
-            <View style={[styles.tableDataCol, styles.tableCellBorderRight, { width: '40%', flex: 'none' }]}>
-              <Text>{studentName}</Text>
-            </View>
-            <View style={[styles.tableHeaderCol, { width: '15%', flex: 'none' }]}>
-              <Text>GRADO</Text>
-            </View>
-            <View style={styles.tableDataCol}>
-              <Text>{gradoStr}</Text>
-            </View>
-          </View>
-
-          {/* FILA: PROPÓSITO */}
-          <View style={styles.tableRow}>
-            <View style={styles.tableHeaderCol}>
-              <Text>PROPÓSITO</Text>
-            </View>
-            <View style={styles.tableDataCol}>
-              <Text>{data?.proposito || ''}</Text>
-            </View>
-          </View>
-
-          {/* SECCIÓN: DESARROLLO DEL ENCUENTRO */}
-          <View style={styles.sectionTitleRow}>
-            <Text style={styles.sectionTitleText}>DESARROLLO DEL ENCUENTRO</Text>
-          </View>
-          <View style={[styles.contentBox, { minHeight: 150 }]}>
-            <Text>{data?.desarrollo || ''}</Text>
-          </View>
-
-          {/* SECCIÓN: OBSERVACIONES Y/O ACUERDOS */}
-          <View style={styles.sectionTitleRow}>
-            <Text style={styles.sectionTitleText}>OBSERVACIONES Y/O ACUERDOS</Text>
-          </View>
-          <View style={[styles.contentBox, { minHeight: 120 }]}>
-            <Text>{data?.observaciones || ''}</Text>
-          </View>
-
-          {/* TEXTO LEGAL ACLARATORIO */}
-          <View style={styles.legalTextContainer}>
-            <Text style={styles.legalText}>
-              <Text style={styles.legalBold}>ACLARACIÓN SOBRE FIRMA DIGITAL: </Text>
-              La presente acta se firma de manera digital, contando con la <Text style={styles.legalBold}>autorización expresa del 
-              acudiente para el uso de la firma registrada en el listado de asistencia</Text>, la cual se adopta como válida para efectos de 
-              constancia, seguimiento institucional y archivo del presente documento, de conformidad con los procedimientos internos de 
-              la institución educativa.
-            </Text>
-          </View>
-
-          {/* BLOQUE FIRMAS UNIFICADO */}
-          <View wrap={false}>
-            {/* TÍTULO FIRMAN */}
-            <View style={[styles.sectionTitleRow, { borderBottomWidth: 1 }]}>
-              <Text style={styles.sectionTitleText}>FIRMAN</Text>
-            </View>
-
-            {/* CAJAS DE FIRMA */}
-            <View style={styles.signatureRow}>
-              <View style={styles.signatureCol}>
-                {firmas.orientador && (
-                  <Image src={firmas.orientador} style={styles.signatureImage} />
-                )}
+        return (
+          <Page key={index} size="LETTER" style={styles.page} wrap>
+            <Header />
+            
+            {/* TABLA GLOBAL ENVOLVENTE */}
+            <View style={styles.tableContainer}>
+              
+              {/* TÍTULO */}
+              <View style={styles.sectionTitleRow}>
+                <Text style={styles.sectionTitleText}>ACTA DE ATENCIÓN A PADRES</Text>
               </View>
-              <View style={styles.signatureCol}>
-                {firmas.acudiente && (
-                  <Image src={firmas.acudiente} style={styles.signatureImage} />
-                )}
+
+              {/* FILA: FECHA */}
+              <View style={styles.tableRow}>
+                <View style={styles.tableHeaderCol}>
+                  <Text style={styles.labelText}>FECHA:</Text>
+                </View>
+                <View style={styles.tableValueCol}>
+                  <Text style={styles.valueText}>{item?.fecha || ''}</Text>
+                </View>
               </View>
-              <View style={styles.signatureColLast}>
-                {firmas.estudiante && (
-                  <Image src={firmas.estudiante} style={styles.signatureImage} />
-                )}
+
+              {/* FILA: LUGAR */}
+              <View style={styles.tableRow}>
+                <View style={styles.tableHeaderCol}>
+                  <Text style={styles.labelText}>LUGAR:</Text>
+                </View>
+                <View style={styles.tableValueCol}>
+                  <Text style={styles.valueText}>{item?.lugar || 'ORIENTACIÓN ESCOLAR'}</Text>
+                </View>
               </View>
+
+              {/* FILA: NOMBRE DEL ESTUDIANTE */}
+              <View style={styles.tableRow}>
+                <View style={styles.tableHeaderCol}>
+                  <Text style={styles.labelText}>NOMBRE DEL ESTUDIANTE:</Text>
+                </View>
+                <View style={styles.tableValueCol}>
+                  <Text style={styles.valueTextBold}>{item?.nombre_estudiante || studentName}</Text>
+                </View>
+              </View>
+
+              {/* FILA: GRADO */}
+              <View style={styles.tableRow}>
+                <View style={styles.tableHeaderCol}>
+                  <Text style={styles.labelText}>GRADO:</Text>
+                </View>
+                <View style={styles.tableValueCol}>
+                  <Text style={styles.valueText}>{item?.grado || gradoStr}</Text>
+                </View>
+              </View>
+
+              {/* FILA: NOMBRE DEL PADRE / ACUDIENTE */}
+              <View style={styles.tableRow}>
+                <View style={styles.tableHeaderCol}>
+                  <Text style={styles.labelText}>NOMBRE DEL PADRE / ACUDIENTE:</Text>
+                </View>
+                <View style={styles.tableValueCol}>
+                  <Text style={styles.valueTextBold}>{item?.nombre_acudiente || ''}</Text>
+                </View>
+              </View>
+
+              {/* FILA: TELÉFONO */}
+              <View style={styles.tableRow}>
+                <View style={styles.tableHeaderCol}>
+                  <Text style={styles.labelText}>TELÉFONO DE CONTACTO:</Text>
+                </View>
+                <View style={styles.tableValueCol}>
+                  <Text style={styles.valueText}>{item?.telefono || ''}</Text>
+                </View>
+              </View>
+
+              {/* SECCIÓN: OBJETIVO */}
+              <View style={styles.sectionTitleRow}>
+                <Text style={styles.sectionTitleText}>OBJETIVO DE LA ATENCIÓN</Text>
+              </View>
+              <View style={styles.contentBox}>
+                <Text>{item?.objetivo || ''}</Text>
+              </View>
+
+              {/* SECCIÓN: DESCRIPCIÓN */}
+              <View style={styles.sectionTitleRow}>
+                <Text style={styles.sectionTitleText}>DESCRIPCIÓN DE LA SITUACIÓN / MOTIVO</Text>
+              </View>
+              <View style={styles.contentBox}>
+                <Text>{item?.descripcion || ''}</Text>
+              </View>
+
+              {/* SECCIÓN: COMPROMISOS / ACUERDOS */}
+              <View style={styles.sectionTitleRow}>
+                <Text style={styles.sectionTitleText}>COMPROMISOS Y ACUERDOS ESTABLECIDOS</Text>
+              </View>
+              <View style={styles.contentBox}>
+                <Text>{item?.compromisos || item?.acuerdos || ''}</Text>
+              </View>
+
+              {/* SECCIÓN: FIRMAS */}
+              <View style={styles.signaturesContainer}>
+                <View style={styles.signatureRow}>
+                  <View style={styles.signatureCol}>
+                    {firmas.orientador && (
+                      <Image src={firmas.orientador} style={styles.signatureImage} />
+                    )}
+                  </View>
+                  <View style={styles.signatureCol}>
+                    {firmas.acudiente && (
+                      <Image src={firmas.acudiente} style={styles.signatureImage} />
+                    )}
+                  </View>
+                  <View style={styles.signatureColLast}>
+                    {firmas.estudiante && (
+                      <Image src={firmas.estudiante} style={styles.signatureImage} />
+                    )}
+                  </View>
+                </View>
+
+                {/* NOMBRES DE FIRMANTES */}
+                <View style={styles.signatureNameRow}>
+                  <View style={styles.signatureNameCol}>
+                    <Text>DOCENTE ORIENTADORA</Text>
+                  </View>
+                  <View style={styles.signatureNameCol}>
+                    <Text>ACUDIENTE</Text>
+                  </View>
+                  <View style={styles.signatureNameColLast}>
+                    <Text>ESTUDIANTE</Text>
+                  </View>
+                </View>
+              </View>
+              
             </View>
 
-            {/* NOMBRES DE FIRMANTES */}
-            <View style={styles.signatureNameRow}>
-              <View style={styles.signatureNameCol}>
-                <Text>DOCENTE ORIENTADORA</Text>
-              </View>
-              <View style={styles.signatureNameCol}>
-                <Text>ACUDIENTE</Text>
-              </View>
-              <View style={styles.signatureNameColLast}>
-                <Text>ESTUDIANTE</Text>
-              </View>
-            </View>
-          </View>
-          
-        </View>
-
-        <Footer />
-      </Page>
+            <Footer />
+          </Page>
+        );
+      })}
     </Document>
   );
 }

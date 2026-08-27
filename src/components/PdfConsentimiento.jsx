@@ -147,36 +147,41 @@ const Bullet = ({ children }) => (
    COMPONENTE PRINCIPAL
    ============================================================ */
 export default function PdfConsentimiento({ data }) {
-  const est = data?.estudiantes || {};
-  const acu = est.datos_acudiente || {};
-
-  // Grado sin jornada
-  let gradoStr = est.grado || '';
-  if (!data?._gradoLimpio) {
-    const gradoMatch = gradoStr.match(/(.*?)-(MA[ÑN]ANA|TARDE|NOCHE|SABATINA|UNICA)$/i);
-    if (gradoMatch) gradoStr = gradoMatch[1];
-  }
-
-  // Datos auto-completados
-  const studentName = `${est.nombres || ''} ${est.apellidos || ''}`.trim();
-  const studentDoc = est.documento || '';
-  const parentName = `${acu.nombres || ''} ${acu.apellidos || ''}`.trim();
-  const parentDoc = acu.documento || '';
-  const parentesco = (acu.parentesco || '').toLowerCase();
-
-  // Firmas
-  const firmas = data?.firmas || {};
-
-  const dateStr = data?.fecha || new Date().toLocaleDateString('es-CO');
-
-  // Linea de relleno
-  const line = (text, width) => text || '_'.repeat(width || 30);
+  const dataArray = Array.isArray(data) ? data : [data || {}];
 
   return (
     <Document>
-      {/* ==========================================
-          PAGINA 1 — Contexto + Objetivo + Confidencialidad
-          ========================================== */}
+      {dataArray.map((item, index) => {
+        const est = item?.estudiantes || {};
+        const acu = est.datos_acudiente || {};
+
+        // Grado sin jornada
+        let gradoStr = est.grado || '';
+        if (!item?._gradoLimpio) {
+          const gradoMatch = gradoStr.match(/(.*?)-(MA[ÑN]ANA|TARDE|NOCHE|SABATINA|UNICA)$/i);
+          if (gradoMatch) gradoStr = gradoMatch[1];
+        }
+
+        // Datos auto-completados
+        const studentName = item?.nombre_estudiante || `${est.nombres || ''} ${est.apellidos || ''}`.trim();
+        const studentDoc = item?.doc_estudiante || est.documento || '';
+        const parentName = item?.nombre_acudiente || `${acu.nombres || ''} ${acu.apellidos || ''}`.trim();
+        const parentDoc = item?.doc_acudiente || acu.documento || '';
+        const parentesco = (item?.parentesco || acu.parentesco || '').toLowerCase();
+
+        // Firmas
+        const firmas = item?.firmas || {};
+
+        const dateStr = item?.fecha || new Date().toLocaleDateString('es-CO');
+
+        // Linea de relleno
+        const line = (text, width) => text || '_'.repeat(width || 30);
+
+        return (
+          <React.Fragment key={index}>
+            {/* ==========================================
+                PAGINA 1 — Contexto + Objetivo + Confidencialidad
+                ========================================== */}
       <Page size="LETTER" style={styles.page}>
         <Header />
         <Footer />
@@ -384,11 +389,14 @@ export default function PdfConsentimiento({ data }) {
           </View>
           <View style={[styles.signFieldRow, { marginTop: 8 }]}>
             <Text style={styles.signLabel}>Tarjeta profesional (si aplica): </Text>
-            <Text style={styles.signField}>{line(data?.tp_orientador, 42)}</Text>
+            <Text style={styles.signField}>{line(item?.tp_orientador, 42)}</Text>
           </View>
         </View>
         </View>
       </Page>
+          </React.Fragment>
+        );
+      })}
     </Document>
   );
 }

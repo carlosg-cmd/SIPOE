@@ -62,30 +62,46 @@ export default function BibliotecaDocumentos() {
   };
 
   const abrirDocumento = (doc) => {
-    // Reconstruimos el objeto data para que los templates lo entiendan.
-    // El snapshot guardó la mayoría de datos en 'datos_snapshot'.
-    // Combinamos esto con la info básica.
+    const rawSnapshots = Array.isArray(doc.datos_snapshot)
+      ? doc.datos_snapshot
+      : (doc.datos_snapshot ? [doc.datos_snapshot] : [{}]);
+
+    const snapshots = rawSnapshots.map((snap) => {
+      const estObj = snap.estudiantes || snap.estudiante || {};
+      return {
+        ...snap,
+        id: snap.id || doc.atencion_id,
+        fecha: snap.fecha,
+        estudiante_id: doc.estudiante_id,
+        nombre_estudiante: doc.nombre_estudiante || `${estObj.nombres || ''} ${estObj.apellidos || ''}`.trim(),
+        grado: snap.grado || estObj.grado,
+        estudiante: {
+          id: doc.estudiante_id,
+          nombres: (doc.nombre_estudiante || '').split(' ')[0] || estObj.nombres || '',
+          apellidos: (doc.nombre_estudiante || '').split(' ').slice(1).join(' ') || estObj.apellidos || '',
+          grado: snap.grado || estObj.grado,
+          documento: snap.documento || estObj.documento,
+          datos_acudiente: snap.datos_acudiente || estObj.datos_acudiente,
+        },
+        estudiantes: {
+          id: doc.estudiante_id,
+          nombres: doc.nombre_estudiante || estObj.nombres,
+          apellidos: '',
+          grado: snap.grado || estObj.grado,
+          documento: snap.documento || estObj.documento,
+          datos_acudiente: snap.datos_acudiente || estObj.datos_acudiente,
+        },
+      };
+    });
+
+    const latest = snapshots[snapshots.length - 1] || {};
     const dataForTemplate = {
-      ...doc.datos_snapshot,
-      id: doc.atencion_id, // Por si lo necesita
-      estudiante: {
-        id: doc.estudiante_id,
-        nombres: doc.nombre_estudiante.split(' ')[0], // Aproximado
-        apellidos: doc.nombre_estudiante.split(' ').slice(1).join(' '),
-        grado: doc.datos_snapshot?.grado,
-        documento: doc.datos_snapshot?.documento,
-        // Algunos templates esperan esto
-      },
-      // Algunos templates usan estudiantes
-      estudiantes: {
-        id: doc.estudiante_id,
-        nombres: doc.nombre_estudiante, // Aproximado
-        apellidos: '',
-        grado: doc.datos_snapshot?.grado,
-        documento: doc.datos_snapshot?.documento,
-      }
+      ...latest,
+      _snapshots: snapshots,
+      _esMultiPagina: snapshots.length > 1,
+      _totalPaginas: snapshots.length,
     };
-    
+
     setPrintState({ data: dataForTemplate, type: doc.tipo_formato });
   };
 
@@ -181,8 +197,13 @@ export default function BibliotecaDocumentos() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm font-bold text-indigo-700 dark:text-indigo-400">
+                      <div className="text-sm font-bold text-indigo-700 dark:text-indigo-400 flex items-center gap-2">
                         {doc.nombre_formato}
+                        {Array.isArray(doc.datos_snapshot) && doc.datos_snapshot.length > 1 && (
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700">
+                            📄 {doc.datos_snapshot.length} páginas
+                          </span>
+                        )}
                       </div>
                       <div className="text-xs text-slate-500 mt-1 uppercase tracking-wider bg-slate-100 dark:bg-slate-800 inline-block px-2 py-0.5 rounded">
                         {doc.tipo_formato}

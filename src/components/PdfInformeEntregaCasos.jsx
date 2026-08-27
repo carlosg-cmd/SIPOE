@@ -76,7 +76,12 @@ const Header = () => (
 );
 
 export default function PdfInformeEntregaCasos({ data, firmas }) {
-  const f = data || {};
+  const dataArray = Array.isArray(data) ? data : [data || {}];
+
+  return (
+    <Document>
+      {dataArray.map((item, index) => {
+  const f = item || {};
   const t = (val) => (val === undefined || val === null || val === '' ? '' : String(val));
   
   const getFirmaUrl = (tipo) => {
@@ -95,8 +100,8 @@ export default function PdfInformeEntregaCasos({ data, firmas }) {
   const accionesList = f.acciones_realizadas || [];
 
   return (
-    <Document>
-      <Page size="LETTER" style={styles.page}>
+          <React.Fragment key={index}>
+            <Page size="LETTER" style={styles.page}>
         <Header />
 
         <Text style={styles.mainTitle}>INFORME PARA ENTREGA DEL CASO A LA SECRETARÍA DE SALUD</Text>
@@ -187,6 +192,9 @@ export default function PdfInformeEntregaCasos({ data, firmas }) {
         </View>
 
       </Page>
+          </React.Fragment>
+        );
+      })}
     </Document>
   );
 }

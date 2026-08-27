@@ -76,7 +76,12 @@ const Header = () => (
 );
 
 export default function PdfRemisionCoordinacion({ data, firmas }) {
-  const f = data || {};
+  const dataArray = Array.isArray(data) ? data : [data || {}];
+
+  return (
+    <Document>
+      {dataArray.map((item, index) => {
+  const f = item || {};
   const t = (val) => (val === undefined || val === null || val === '' ? ' ' : String(val));
   
   const motivos = f.motivos || [];
@@ -95,8 +100,8 @@ export default function PdfRemisionCoordinacion({ data, firmas }) {
   };
 
   return (
-    <Document>
-      <Page size="LETTER" style={styles.page}>
+          <React.Fragment key={index}>
+            <Page size="LETTER" style={styles.page}>
         <Header />
 
         {/* 1. DATOS DEL ESTUDIANTE */}
@@ -198,6 +203,9 @@ export default function PdfRemisionCoordinacion({ data, firmas }) {
           Este formato da continuidad al proceso pedagógico y disciplinario, conforme a la Ley 1620 de 2013, el Decreto 1965 de 2013 y el Manual de Convivencia Institucional.
         </Text>
       </Page>
+          </React.Fragment>
+        );
+      })}
     </Document>
   );
 }

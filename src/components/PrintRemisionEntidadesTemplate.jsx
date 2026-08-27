@@ -243,7 +243,7 @@ export default function PrintRemisionEntidadesTemplate({ data, onClose }) {
           <span className="text-sm font-semibold text-gray-800">Vista Previa Dinámica</span>
           <div className="w-px h-4 bg-gray-300"></div>
           <button
-            onClick={() => guardarDocumento(data, 'remision_entidades')}
+            onClick={() => guardarDocumento(data, 'remision_entidades', fields)}
             className="flex items-center gap-2 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow transition-colors"
           >
             <BookOpen className="w-3.5 h-3.5" />
@@ -252,7 +252,7 @@ export default function PrintRemisionEntidadesTemplate({ data, onClose }) {
         </div>
 
         <PDFViewer width="100%" height="100%" className="border-0">
-          <PdfRemisionEntidades data={fields} firmas={firmasData} />
+          <PdfRemisionEntidades data={Array.isArray(data?._snapshots) && data._snapshots.length > 1 ? data._snapshots : fields} firmas={firmasData} />
         </PDFViewer>
       </div>
     </div>

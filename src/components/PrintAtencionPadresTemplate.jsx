@@ -122,28 +122,33 @@ export default function PrintAtencionPadresTemplate({ data, onClose }) {
     setFields(prev => ({ ...prev, [field]: value }));
   };
 
-  const buildPdfData = () => ({
-    ...data,
-    fecha: fields.fecha,
-    lugar: fields.lugar,
-    nombre_orientador: fields.nombre_orientador,
-    nombre_acudiente: fields.nombre_acudiente,
-    proposito: fields.proposito,
-    desarrollo: fields.desarrollo,
-    observaciones: fields.observaciones,
-    estudiantes: {
-      ...est,
-      nombres: fields.nombre_estudiante,
-      apellidos: '', // Combinado en PDF
-      grado: fields.grado,
-      datos_acudiente: {
-        ...acu,
-        nombres: fields.nombre_acudiente,
-        apellidos: '', // Combinado
-      }
-    },
-    firmas: firmasData
-  });
+  const buildPdfData = () => {
+    if (Array.isArray(data?._snapshots) && data._snapshots.length > 1) {
+      return data._snapshots;
+    }
+    return {
+      ...data,
+      fecha: fields.fecha,
+      lugar: fields.lugar,
+      nombre_orientador: fields.nombre_orientador,
+      nombre_acudiente: fields.nombre_acudiente,
+      proposito: fields.proposito,
+      desarrollo: fields.desarrollo,
+      observaciones: fields.observaciones,
+      estudiantes: {
+        ...est,
+        nombres: fields.nombre_estudiante,
+        apellidos: '', // Combinado en PDF
+        grado: fields.grado,
+        datos_acudiente: {
+          ...acu,
+          nombres: fields.nombre_acudiente,
+          apellidos: '', // Combinado
+        }
+      },
+      firmas: firmasData
+    };
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex bg-gray-100">

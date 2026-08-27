@@ -133,34 +133,39 @@ export default function PrintConsentimientoTemplate({ data, onClose }) {
   };
 
   // Construir objeto de datos modificados para pasarlo al PDF
-  const buildPdfData = () => ({
-    ...data,
-    fecha: fields.fecha,
-    estudiantes: {
-      ...est,
-      nombres: fields.nombre_estudiante.split(' ').slice(0, -1).join(' ') || fields.nombre_estudiante,
-      apellidos: fields.nombre_estudiante.split(' ').slice(-1).join(' '),
-      documento: fields.documento_estudiante,
-      grado: fields.grado,
-      datos_acudiente: {
-        ...acu,
-        nombres: fields.nombre_acudiente.split(' ').slice(0, -1).join(' ') || fields.nombre_acudiente,
-        apellidos: fields.nombre_acudiente.split(' ').slice(-1).join(' '),
-        documento: fields.documento_acudiente,
-        parentesco: fields.parentesco,
-      }
-    },
-    tipo_doc_estudiante: fields.tipo_doc_estudiante,
-    edad_estudiante: fields.edad_estudiante,
-    tipo_doc_acudiente: fields.tipo_doc_acudiente,
-    tipo_doc_orientador: fields.tipo_doc_orientador,
-    doc_orientador: fields.doc_orientador,
-    observaciones_extra: fields.observaciones,
-    nombre_orientador: fields.nombre_orientador,
-    tp_orientador: fields.tp_orientador,
-    _gradoLimpio: true,
-    firmas: firmasData // Pasamos las firmas al PDF
-  });
+  const buildPdfData = () => {
+    if (Array.isArray(data?._snapshots) && data._snapshots.length > 1) {
+      return data._snapshots;
+    }
+    return {
+      ...data,
+      fecha: fields.fecha,
+      estudiantes: {
+        ...est,
+        nombres: fields.nombre_estudiante.split(' ').slice(0, -1).join(' ') || fields.nombre_estudiante,
+        apellidos: fields.nombre_estudiante.split(' ').slice(-1).join(' '),
+        documento: fields.documento_estudiante,
+        grado: fields.grado,
+        datos_acudiente: {
+          ...acu,
+          nombres: fields.nombre_acudiente.split(' ').slice(0, -1).join(' ') || fields.nombre_acudiente,
+          apellidos: fields.nombre_acudiente.split(' ').slice(-1).join(' '),
+          documento: fields.documento_acudiente,
+          parentesco: fields.parentesco,
+        }
+      },
+      tipo_doc_estudiante: fields.tipo_doc_estudiante,
+      edad_estudiante: fields.edad_estudiante,
+      tipo_doc_acudiente: fields.tipo_doc_acudiente,
+      tipo_doc_orientador: fields.tipo_doc_orientador,
+      doc_orientador: fields.doc_orientador,
+      observaciones_extra: fields.observaciones,
+      nombre_orientador: fields.nombre_orientador,
+      tp_orientador: fields.tp_orientador,
+      _gradoLimpio: true,
+      firmas: firmasData // Pasamos las firmas al PDF
+    };
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">

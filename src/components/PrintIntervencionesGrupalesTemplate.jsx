@@ -115,7 +115,7 @@ export default function PrintIntervencionesGrupalesTemplate({ data, onClose }) {
               Vista Previa Dinámica
             </div>
             <button
-              onClick={() => guardarDocumento(data, 'intervencion_grupal')}
+              onClick={() => guardarDocumento(data, 'intervencion_grupal', fields)}
               className="flex items-center gap-2 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow transition-colors"
             >
               <BookOpen className="w-3.5 h-3.5" />
@@ -125,7 +125,7 @@ export default function PrintIntervencionesGrupalesTemplate({ data, onClose }) {
           
           <div className="flex-1 w-full h-full p-0">
             <PDFViewer width="100%" height="100%" style={{ border: 'none', backgroundColor: '#4b5563' }}>
-              <PdfIntervencionesGrupales data={fields} />
+              <PdfIntervencionesGrupales data={Array.isArray(data?._snapshots) && data._snapshots.length > 1 ? data._snapshots : fields} />
             </PDFViewer>
           </div>
         </div>

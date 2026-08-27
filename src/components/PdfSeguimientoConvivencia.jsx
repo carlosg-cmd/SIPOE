@@ -98,7 +98,12 @@ const Header = () => (
 );
 
 export default function PdfSeguimientoConvivencia({ data, firmas }) {
-  const f = data || {};
+  const dataArray = Array.isArray(data) ? data : [data || {}];
+
+  return (
+    <Document>
+      {dataArray.map((item, index) => {
+  const f = item || {};
   const t = (val) => (val === undefined || val === null || val === '' ? ' ' : String(val));
   
   const encuentros = f.encuentros || Array(4).fill({ fecha: '', resultado: '', observacion: '' });
@@ -117,8 +122,8 @@ export default function PdfSeguimientoConvivencia({ data, firmas }) {
   };
 
   return (
-    <Document>
-      <Page size="LETTER" style={styles.page}>
+          <React.Fragment key={index}>
+            <Page size="LETTER" style={styles.page}>
         <Header />
 
         <View style={styles.table}>
@@ -228,6 +233,9 @@ export default function PdfSeguimientoConvivencia({ data, firmas }) {
         </View>
 
       </Page>
+          </React.Fragment>
+        );
+      })}
     </Document>
   );
 }
