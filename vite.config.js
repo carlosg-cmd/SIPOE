@@ -11,7 +11,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['logo.jpg', 'favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      includeAssets: ['favicon.png', 'sipoe_logo.png', 'logo.jpg', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
         name: 'SIPOE - Orientación Escolar',
         short_name: 'SIPOE',
