@@ -273,12 +273,13 @@ export default function PrintAtencionEscolarTemplate({ data, onClose }) {
   };
 
   const buildPdfData = () => {
+    const current = { ...fields };
     if (Array.isArray(data?._snapshots) && data._snapshots.length > 1) {
-      return data._snapshots;
+      const all = [...data._snapshots];
+      all[all.length - 1] = current;
+      return all;
     }
-    return {
-      ...fields
-    };
+    return current;
   };
 
   const inputClass = "w-full text-sm p-1 border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500 outline-none text-gray-800";

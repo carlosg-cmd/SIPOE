@@ -95,7 +95,12 @@ export default function PdfRemisionEntidades({ data, firmas }) {
   return (
     <Document>
       {dataArray.map((item, index) => {
-  return (
+        const data = item || {};
+        const nombresArr = (data.nombres || '').split(' ');
+        const nom1 = nombresArr[0] || '';
+        const nom2 = nombresArr.slice(1).join(' ') || '';
+
+        return (
           <React.Fragment key={index}>
             <Page size="A4" style={styles.page}>
         <Header />
@@ -129,8 +134,8 @@ export default function PdfRemisionEntidades({ data, firmas }) {
             <View style={[styles.tableCol, { width: '25%', borderRightWidth: 0 }]}><Text style={[styles.tableCellLabel, styles.textCenter]}>Segundo Apellido</Text></View>
           </View>
           <View style={[styles.tableRow, { borderBottomWidth: 1, borderColor: '#000' }]}>
-            <View style={[styles.tableCol, { width: '25%' }]}><Text style={[styles.tableCellValue, styles.textCenter]}>{data.nombres.split(' ')[0] || ''}</Text></View>
-            <View style={[styles.tableCol, { width: '25%' }]}><Text style={[styles.tableCellValue, styles.textCenter]}>{data.nombres.split(' ').slice(1).join(' ') || ''}</Text></View>
+            <View style={[styles.tableCol, { width: '25%' }]}><Text style={[styles.tableCellValue, styles.textCenter]}>{nom1}</Text></View>
+            <View style={[styles.tableCol, { width: '25%' }]}><Text style={[styles.tableCellValue, styles.textCenter]}>{nom2}</Text></View>
             <View style={[styles.tableCol, { width: '25%' }]}><Text style={[styles.tableCellValue, styles.textCenter]}>{data.apellido1 || ''}</Text></View>
             <View style={[styles.tableCol, { width: '25%', borderRightWidth: 0 }]}><Text style={[styles.tableCellValue, styles.textCenter]}>{data.apellido2 || ''}</Text></View>
           </View>

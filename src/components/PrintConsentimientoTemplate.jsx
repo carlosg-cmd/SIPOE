@@ -134,10 +134,7 @@ export default function PrintConsentimientoTemplate({ data, onClose }) {
 
   // Construir objeto de datos modificados para pasarlo al PDF
   const buildPdfData = () => {
-    if (Array.isArray(data?._snapshots) && data._snapshots.length > 1) {
-      return data._snapshots;
-    }
-    return {
+    const current = {
       ...data,
       fecha: fields.fecha,
       estudiantes: {
@@ -165,6 +162,13 @@ export default function PrintConsentimientoTemplate({ data, onClose }) {
       _gradoLimpio: true,
       firmas: firmasData // Pasamos las firmas al PDF
     };
+
+    if (Array.isArray(data?._snapshots) && data._snapshots.length > 1) {
+      const all = [...data._snapshots];
+      all[all.length - 1] = current;
+      return all;
+    }
+    return current;
   };
 
   return (

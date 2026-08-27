@@ -130,12 +130,13 @@ export default function PrintSeguimientoConvivenciaTemplate({ data, onClose }) {
   const labelClass = "block text-xs font-semibold text-gray-600 mb-1";
 
   const buildPdfData = () => {
+    const current = { ...fields };
     if (Array.isArray(data?._snapshots) && data._snapshots.length > 1) {
-      return data._snapshots;
+      const all = [...data._snapshots];
+      all[all.length - 1] = current;
+      return all;
     }
-    return {
-      ...fields
-    };
+    return current;
   };
 
   const handleAddEncuentro = () => {

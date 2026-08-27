@@ -138,6 +138,16 @@ export default function PrintRemisionEntidadesTemplate({ data, onClose }) {
 
   const inputClass = "w-full p-1.5 text-xs border border-gray-300 rounded bg-white text-gray-900 focus:ring-1 focus:ring-indigo-500 outline-none";
   const labelClass = "block text-[10px] font-bold text-gray-600 mb-1 uppercase";
+  
+  const buildPdfData = () => {
+    const current = { ...fields };
+    if (Array.isArray(data?._snapshots) && data._snapshots.length > 1) {
+      const all = [...data._snapshots];
+      all[all.length - 1] = current;
+      return all;
+    }
+    return current;
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex bg-white">
@@ -171,59 +181,48 @@ export default function PrintRemisionEntidadesTemplate({ data, onClose }) {
 
             {/* SECCION 2 */}
             <div className="space-y-3">
-              <h3 className="font-bold text-indigo-800 border-b-2 border-indigo-100 pb-1 text-sm mt-4">DATOS DEL REMITIDO</h3>
+              <h3 className="font-bold text-indigo-800 border-b-2 border-indigo-100 pb-1 text-sm">DATOS DEL REMITIDO</h3>
               <div className="grid grid-cols-2 gap-2">
-                <div className="col-span-2"><label className={labelClass}>Nombres (Completos)</label><input type="text" value={fields.nombres} onChange={e => handleChange('nombres', e.target.value)} className={inputClass} /></div>
+                <div><label className={labelClass}>Nombres</label><input type="text" value={fields.nombres} onChange={e => handleChange('nombres', e.target.value)} className={inputClass} /></div>
                 <div><label className={labelClass}>Primer Apellido</label><input type="text" value={fields.apellido1} onChange={e => handleChange('apellido1', e.target.value)} className={inputClass} /></div>
                 <div><label className={labelClass}>Segundo Apellido</label><input type="text" value={fields.apellido2} onChange={e => handleChange('apellido2', e.target.value)} className={inputClass} /></div>
-                <div>
-                  <label className={labelClass}>Tipo Doc.</label>
-                  <select value={fields.tipo_documento} onChange={e => handleChange('tipo_documento', e.target.value)} className={inputClass}>
-                    <option value="T.I">T.I</option><option value="C.C">C.C</option><option value="R.C">R.C</option><option value="PEP">PEP</option>
-                  </select>
-                </div>
-                <div><label className={labelClass}>No. Documento</label><input type="text" value={fields.numero_documento} onChange={e => handleChange('numero_documento', e.target.value)} className={inputClass} /></div>
                 <div><label className={labelClass}>Sexo</label><input type="text" value={fields.sexo} onChange={e => handleChange('sexo', e.target.value)} className={inputClass} /></div>
-                <div><label className={labelClass}>Fecha Nacimiento</label><input type="text" value={fields.fecha_nacimiento} onChange={e => handleChange('fecha_nacimiento', e.target.value)} className={inputClass} /></div>
-                <div><label className={labelClass}>Edad</label><input type="text" value={fields.edad} onChange={e => handleChange('edad', e.target.value)} className={inputClass} /></div>
-                <div><label className={labelClass}>EPS</label><input type="text" value={fields.eps} onChange={e => handleChange('eps', e.target.value)} className={inputClass} /></div>
               </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div><label className={labelClass}>Tipo de Documento</label><input type="text" value={fields.tipo_documento} onChange={e => handleChange('tipo_documento', e.target.value)} className={inputClass} /></div>
+                <div><label className={labelClass}>Número de Documento</label><input type="text" value={fields.numero_documento} onChange={e => handleChange('numero_documento', e.target.value)} className={inputClass} /></div>
+                <div><label className={labelClass}>Fecha de Nacimiento</label><input type="text" value={fields.fecha_nacimiento} onChange={e => handleChange('fecha_nacimiento', e.target.value)} className={inputClass} placeholder="DD/MM/AAAA" /></div>
+                <div><label className={labelClass}>Edad</label><input type="text" value={fields.edad} onChange={e => handleChange('edad', e.target.value)} className={inputClass} /></div>
+              </div>
+              <div><label className={labelClass}>EPS</label><input type="text" value={fields.eps} onChange={e => handleChange('eps', e.target.value)} className={inputClass} /></div>
             </div>
 
             {/* SECCION 3 */}
             <div className="space-y-3">
-              <h3 className="font-bold text-indigo-800 border-b-2 border-indigo-100 pb-1 text-sm mt-4">DATOS ACUDIENTE</h3>
-              <div><label className={labelClass}>Nombre Acudiente</label><input type="text" value={fields.acudiente_nombre} onChange={e => handleChange('acudiente_nombre', e.target.value)} className={inputClass} /></div>
+              <h3 className="font-bold text-indigo-800 border-b-2 border-indigo-100 pb-1 text-sm">DATOS DEL ACUDIENTE</h3>
+              <div><label className={labelClass}>Nombre del Acudiente</label><input type="text" value={fields.acudiente_nombre} onChange={e => handleChange('acudiente_nombre', e.target.value)} className={inputClass} /></div>
               <div className="grid grid-cols-2 gap-2">
-                <div><label className={labelClass}>Dirección</label><input type="text" value={fields.direccion_residencia} onChange={e => handleChange('direccion_residencia', e.target.value)} className={inputClass} /></div>
+                <div><label className={labelClass}>Dirección de Residencia</label><input type="text" value={fields.direccion_residencia} onChange={e => handleChange('direccion_residencia', e.target.value)} className={inputClass} /></div>
                 <div><label className={labelClass}>Teléfono</label><input type="text" value={fields.acudiente_telefono} onChange={e => handleChange('acudiente_telefono', e.target.value)} className={inputClass} /></div>
               </div>
             </div>
 
             {/* SECCION 4 */}
             <div className="space-y-3">
-              <h3 className="font-bold text-indigo-800 border-b-2 border-indigo-100 pb-1 text-sm mt-4">DATOS DE LA REMISIÓN</h3>
-              <div><label className={labelClass}>Entidad a la que se remite</label><input type="text" value={fields.entidad_remite} onChange={e => handleChange('entidad_remite', e.target.value)} className={inputClass} placeholder="Ej: ICBF, Comisaría, EPS..." /></div>
+              <h3 className="font-bold text-indigo-800 border-b-2 border-indigo-100 pb-1 text-sm">DATOS DE LA REMISIÓN</h3>
+              <div><label className={labelClass}>Entidad a la que se remite</label><input type="text" value={fields.entidad_remite} onChange={e => handleChange('entidad_remite', e.target.value)} className={inputClass} /></div>
               <div><label className={labelClass}>Tipo de Atención</label><input type="text" value={fields.tipo_atencion} onChange={e => handleChange('tipo_atencion', e.target.value)} className={inputClass} /></div>
-              
-              <div>
-                <label className={labelClass}>Motivo de Remisión</label>
-                <textarea rows={3} value={fields.motivo_remision} onChange={e => handleChange('motivo_remision', e.target.value)} className={`${inputClass} resize-y`} />
-              </div>
-              
-              <div>
-                <label className={labelClass}>Solicitud</label>
-                <textarea rows={3} value={fields.solicitud} onChange={e => handleChange('solicitud', e.target.value)} className={`${inputClass} resize-y`} />
-              </div>
+              <div><label className={labelClass}>Motivo de la Remisión</label><textarea rows="3" value={fields.motivo_remision} onChange={e => handleChange('motivo_remision', e.target.value)} className={inputClass} /></div>
+              <div><label className={labelClass}>Solicitud</label><textarea rows="3" value={fields.solicitud} onChange={e => handleChange('solicitud', e.target.value)} className={inputClass} /></div>
             </div>
 
             {/* SECCION 5 */}
-            <div className="space-y-3">
-              <h3 className="font-bold text-indigo-800 border-b-2 border-indigo-100 pb-1 text-sm mt-4">FIRMAS</h3>
+            <div className="space-y-3 mb-8">
+              <h3 className="font-bold text-indigo-800 border-b-2 border-indigo-100 pb-1 text-sm">FIRMAS</h3>
               <div className="grid grid-cols-2 gap-2">
-                <div><label className={labelClass}>Nombre Remite</label><input type="text" value={fields.nombre_remite} onChange={e => handleChange('nombre_remite', e.target.value)} className={inputClass} /></div>
+                <div><label className={labelClass}>Nombre quien remite</label><input type="text" value={fields.nombre_remite} onChange={e => handleChange('nombre_remite', e.target.value)} className={inputClass} /></div>
                 <div><label className={labelClass}>Cargo Remite</label><input type="text" value={fields.cargo_remite} onChange={e => handleChange('cargo_remite', e.target.value)} className={inputClass} /></div>
-                <div><label className={labelClass}>Nombre Recibe</label><input type="text" value={fields.nombre_recibe} onChange={e => handleChange('nombre_recibe', e.target.value)} className={inputClass} /></div>
+                <div><label className={labelClass}>Nombre quien recibe</label><input type="text" value={fields.nombre_recibe} onChange={e => handleChange('nombre_recibe', e.target.value)} className={inputClass} /></div>
                 <div><label className={labelClass}>Cargo Recibe</label><input type="text" value={fields.cargo_recibe} onChange={e => handleChange('cargo_recibe', e.target.value)} className={inputClass} /></div>
                 <div><label className={labelClass}>Fecha Recibido</label><input type="text" value={fields.fecha_recibida} onChange={e => handleChange('fecha_recibida', e.target.value)} className={inputClass} placeholder="DD/MM/AAAA" /></div>
               </div>
@@ -243,7 +242,7 @@ export default function PrintRemisionEntidadesTemplate({ data, onClose }) {
           <span className="text-sm font-semibold text-gray-800">Vista Previa Dinámica</span>
           <div className="w-px h-4 bg-gray-300"></div>
           <button
-            onClick={() => guardarDocumento(data, 'remision_entidades', fields)}
+            onClick={() => guardarDocumento(data, 'remision_entidades', buildPdfData())}
             className="flex items-center gap-2 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow transition-colors"
           >
             <BookOpen className="w-3.5 h-3.5" />
@@ -252,7 +251,7 @@ export default function PrintRemisionEntidadesTemplate({ data, onClose }) {
         </div>
 
         <PDFViewer width="100%" height="100%" className="border-0">
-          <PdfRemisionEntidades data={Array.isArray(data?._snapshots) && data._snapshots.length > 1 ? data._snapshots : fields} firmas={firmasData} />
+          <PdfRemisionEntidades data={buildPdfData()} firmas={firmasData} />
         </PDFViewer>
       </div>
     </div>

@@ -152,6 +152,7 @@ export default function PdfConsentimiento({ data }) {
   return (
     <Document>
       {dataArray.map((item, index) => {
+        const data = item || {};
         const est = item?.estudiantes || {};
         const acu = est.datos_acudiente || {};
 

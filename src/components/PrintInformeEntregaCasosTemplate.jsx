@@ -132,6 +132,16 @@ export default function PrintInformeEntregaCasosTemplate({ data, onClose }) {
     'Registro del caso en el protocolo de protección escolar.'
   ];
 
+  const buildPdfData = () => {
+    const current = { ...fields };
+    if (Array.isArray(data?._snapshots) && data._snapshots.length > 1) {
+      const all = [...data._snapshots];
+      all[all.length - 1] = current;
+      return all;
+    }
+    return current;
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex backdrop-blur-sm p-4 overflow-hidden">
       <div className="bg-white rounded-2xl w-full max-w-7xl mx-auto flex flex-col md:flex-row shadow-2xl overflow-hidden border border-gray-200">
@@ -222,7 +232,7 @@ export default function PrintInformeEntregaCasosTemplate({ data, onClose }) {
               Vista Previa Dinámica
             </div>
             <button
-              onClick={() => guardarDocumento(data, 'informe_entrega_casos', fields)}
+              onClick={() => guardarDocumento(data, 'informe_entrega_casos', buildPdfData())}
               className="flex items-center gap-2 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow transition-colors"
             >
               <BookOpen className="w-3.5 h-3.5" />
@@ -232,7 +242,7 @@ export default function PrintInformeEntregaCasosTemplate({ data, onClose }) {
           
           <div className="flex-1 w-full h-full p-0">
             <PDFViewer width="100%" height="100%" style={{ border: 'none', backgroundColor: '#4b5563' }}>
-              <PdfInformeEntregaCasos data={Array.isArray(data?._snapshots) && data._snapshots.length > 1 ? data._snapshots : fields} firmas={getFirmasList()} />
+              <PdfInformeEntregaCasos data={buildPdfData()} firmas={getFirmasList()} />
             </PDFViewer>
           </div>
         </div>

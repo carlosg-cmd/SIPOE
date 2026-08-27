@@ -38,14 +38,14 @@ export default function PrintAtencionPadresTemplate({ data, onClose }) {
   const [editMode, setEditMode] = useState(true);
   const [fields, setFields] = useState({
     fecha: data?.fecha || new Date().toLocaleDateString('es-CO'),
-    lugar: 'ORIENTACIÓN ESCOLAR',
-    nombre_orientador: data?.nombre_remitente || '',
-    nombre_acudiente: `${acu.nombres || ''} ${acu.apellidos || ''}`.trim(),
-    nombre_estudiante: `${est.nombres || ''} ${est.apellidos || ''}`.trim(),
-    grado: gradoInit,
-    proposito: data?.motivos?.join(', ') || '',
-    desarrollo: data?.descripcion || '',
-    observaciones: data?.orientaciones || '',
+    lugar: data?.lugar || 'ORIENTACIÓN ESCOLAR',
+    nombre_orientador: data?.nombre_orientador || data?.nombre_remitente || '',
+    nombre_acudiente: data?.nombre_acudiente || `${acu.nombres || ''} ${acu.apellidos || ''}`.trim(),
+    nombre_estudiante: data?.nombre_estudiante || `${est.nombres || ''} ${est.apellidos || ''}`.trim(),
+    grado: data?.grado || gradoInit,
+    proposito: data?.proposito || (Array.isArray(data?.motivos) ? data.motivos.join(', ') : (data?.motivos || '')),
+    desarrollo: data?.desarrollo || data?.descripcion || '',
+    observaciones: data?.observaciones || data?.orientaciones || '',
   });
 
   const [firmasData, setFirmasData] = useState({
@@ -123,15 +123,14 @@ export default function PrintAtencionPadresTemplate({ data, onClose }) {
   };
 
   const buildPdfData = () => {
-    if (Array.isArray(data?._snapshots) && data._snapshots.length > 1) {
-      return data._snapshots;
-    }
-    return {
+    const currentSnapshot = {
       ...data,
       fecha: fields.fecha,
       lugar: fields.lugar,
       nombre_orientador: fields.nombre_orientador,
       nombre_acudiente: fields.nombre_acudiente,
+      nombre_estudiante: fields.nombre_estudiante,
+      grado: fields.grado,
       proposito: fields.proposito,
       desarrollo: fields.desarrollo,
       observaciones: fields.observaciones,
@@ -148,6 +147,13 @@ export default function PrintAtencionPadresTemplate({ data, onClose }) {
       },
       firmas: firmasData
     };
+
+    if (Array.isArray(data?._snapshots) && data._snapshots.length > 1) {
+      const all = [...data._snapshots];
+      all[all.length - 1] = currentSnapshot;
+      return all;
+    }
+    return currentSnapshot;
   };
 
   return (

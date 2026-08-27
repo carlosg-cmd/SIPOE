@@ -458,4 +458,5 @@ CREATE TABLE public.documentos_generados (
 ALTER TABLE public.documentos_generados ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "docs_select" ON public.documentos_generados FOR SELECT TO authenticated USING (orientador_id = auth.uid() OR public.get_my_role() = 'Administrador');
 CREATE POLICY "docs_insert" ON public.documentos_generados FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "docs_update" ON public.documentos_generados FOR UPDATE TO authenticated USING (orientador_id = auth.uid() OR public.get_my_role() = 'Administrador') WITH CHECK (orientador_id = auth.uid() OR public.get_my_role() = 'Administrador');
 CREATE POLICY "docs_delete" ON public.documentos_generados FOR DELETE TO authenticated USING (orientador_id = auth.uid() OR public.get_my_role() = 'Administrador');
