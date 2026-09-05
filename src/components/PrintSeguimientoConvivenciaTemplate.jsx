@@ -44,8 +44,8 @@ export default function PrintSeguimientoConvivenciaTemplate({ data, onClose }) {
   };
 
   const [fields, setFields] = useState({
-    estudiante_nombre: nombreCompleto || '',
-    grado: gradoInit,
+    estudiante_nombre: data.estudiante_nombre || nombreCompleto || '',
+    grado: data.grado || gradoInit,
     mes_ano: data.mes_ano || '',
     responsable: data.responsable || '',
     compromisos: data.compromisos || '',
@@ -55,7 +55,7 @@ export default function PrintSeguimientoConvivenciaTemplate({ data, onClose }) {
     decisiones: safeParse(data.decisiones, []),
     
     // For signatures
-    acudiente_nombre: est.datos_acudiente?.nombres ? `${est.datos_acudiente.nombres} ${est.datos_acudiente.apellidos || ''}` : (est.nombre_acudiente || ''),
+    acudiente_nombre: data.acudiente_nombre || (est.datos_acudiente?.nombres ? `${est.datos_acudiente.nombres} ${est.datos_acudiente.apellidos || ''}` : (est.nombre_acudiente || '')),
   });
 
   const [firmasData, setFirmasData] = useState({

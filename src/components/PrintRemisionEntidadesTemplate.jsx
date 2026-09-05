@@ -82,34 +82,34 @@ export default function PrintRemisionEntidadesTemplate({ data, onClose }) {
     return val;
   };
 
-  // Estado editable
+  // Estado editable — leer primero desde data (snapshot guardado)
   const [fields, setFields] = useState({
     fecha: data.fecha || new Date().toISOString().split('T')[0],
-    sede: 'PRINCIPAL',
-    jornada: jornadaInit,
-    grado: gradoInit,
-    apellido1: apellido1,
-    apellido2: apellido2,
-    nombres: nombresPart,
-    tipo_documento: 'T.I',
-    numero_documento: est.documento || '',
-    sexo: est.genero || '',
-    fecha_nacimiento: '',
-    edad: est.edad ? est.edad.toString() : '',
-    telefono_contacto: est.telefono || '',
-    direccion_residencia: est.direccion || '',
-    eps: est.eps || '',
-    acudiente_nombre: acudienteNombre || '', 
-    acudiente_telefono: acudienteTelefono || '',
-    entidad_remite: '',
-    tipo_atencion: '',
-    motivo_remision: data.motivo_principal || '',
-    solicitud: 'Solicitamos la atención integral del presente caso, garantizando el restablecimiento de los derechos...',
-    nombre_remite: data.orientador_nombre || '',
-    cargo_remite: 'Docente Orientador',
-    nombre_recibe: '',
-    cargo_recibe: '',
-    fecha_recibida: ''
+    sede: data.sede || 'PRINCIPAL',
+    jornada: data.jornada || jornadaInit,
+    grado: data.grado || gradoInit,
+    apellido1: data.apellido1 || apellido1,
+    apellido2: data.apellido2 || apellido2,
+    nombres: data.nombres || nombresPart,
+    tipo_documento: data.tipo_documento || 'T.I',
+    numero_documento: data.numero_documento || est.documento || '',
+    sexo: data.sexo || est.genero || '',
+    fecha_nacimiento: data.fecha_nacimiento || '',
+    edad: data.edad || (est.edad ? est.edad.toString() : ''),
+    telefono_contacto: data.telefono_contacto || est.telefono || '',
+    direccion_residencia: data.direccion_residencia || est.direccion || '',
+    eps: data.eps || est.eps || '',
+    acudiente_nombre: data.acudiente_nombre || acudienteNombre || '', 
+    acudiente_telefono: data.acudiente_telefono || acudienteTelefono || '',
+    entidad_remite: data.entidad_remite || '',
+    tipo_atencion: data.tipo_atencion || '',
+    motivo_remision: data.motivo_remision || data.motivo_principal || '',
+    solicitud: data.solicitud || 'Solicitamos la atención integral del presente caso, garantizando el restablecimiento de los derechos...',
+    nombre_remite: data.nombre_remite || data.orientador_nombre || '',
+    cargo_remite: data.cargo_remite || 'Docente Orientador',
+    nombre_recibe: data.nombre_recibe || '',
+    cargo_recibe: data.cargo_recibe || '',
+    fecha_recibida: data.fecha_recibida || ''
   });
 
   const [firmasData, setFirmasData] = useState({

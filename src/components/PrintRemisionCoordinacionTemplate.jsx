@@ -44,18 +44,18 @@ export default function PrintRemisionCoordinacionTemplate({ data, onClose }) {
   const today = new Date().toISOString().split('T')[0];
 
   const [fields, setFields] = useState({
-    estudiante_nombre: nombreCompleto,
-    grado: gradoInit,
-    acudiente_nombre: est.datos_acudiente?.nombres ? `${est.datos_acudiente.nombres} ${est.datos_acudiente.apellidos || ''}`.trim() : (est.nombre_acudiente || ''),
-    telefono: est.datos_acudiente?.telefono || est.telefono_acudiente || '',
-    fecha_remision: data.fecha || today,
-    remite: data.responsable || '',
-    motivos: safeParse(data.motivos_remision_coord, []),
-    motivo_otro: data.motivo_remision_coord_otro || '',
-    descripcion_breve: data.descripcion_breve_coord || '',
-    compromisos_previos: data.compromisos_previos_coord || '',
-    seguimiento_resumen: safeParse(data.seguimiento_resumen_coord, []),
-    observaciones_relevantes: data.observaciones_relevantes_coord || ''
+    estudiante_nombre: data.estudiante_nombre || nombreCompleto,
+    grado: data.grado || gradoInit,
+    acudiente_nombre: data.acudiente_nombre || (est.datos_acudiente?.nombres ? `${est.datos_acudiente.nombres} ${est.datos_acudiente.apellidos || ''}`.trim() : (est.nombre_acudiente || '')),
+    telefono: data.telefono || est.datos_acudiente?.telefono || est.telefono_acudiente || '',
+    fecha_remision: data.fecha_remision || data.fecha || today,
+    remite: data.remite || data.responsable || '',
+    motivos: safeParse(data.motivos || data.motivos_remision_coord, []),
+    motivo_otro: data.motivo_otro || data.motivo_remision_coord_otro || '',
+    descripcion_breve: data.descripcion_breve || data.descripcion_breve_coord || '',
+    compromisos_previos: data.compromisos_previos || data.compromisos_previos_coord || '',
+    seguimiento_resumen: safeParse(data.seguimiento_resumen || data.seguimiento_resumen_coord, []),
+    observaciones_relevantes: data.observaciones_relevantes || data.observaciones_relevantes_coord || ''
   });
 
   const [firmasData, setFirmasData] = useState({

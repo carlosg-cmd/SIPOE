@@ -282,14 +282,28 @@ export default function Seguimientos() {
                       {ultimoEstado === 'Cerrado' ? <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" /> : <Clock className="w-3.5 h-3.5 mr-1.5" />}
                       Último estado: {ultimoEstado}
                     </span>
-                    <button className="text-slate-400 hover:text-emerald-600 transition-colors mr-3">
+                                        <button className="text-slate-400 hover:text-emerald-600 transition-colors mr-3">
                       <span className="text-sm font-semibold">{isExpanded ? 'Ocultar historial' : 'Ver historial'}</span>
+                    </button>
+                    {/* Nuevo botón para agregar seguimiento pre‑seleccionado */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsEditing(false);
+                        setEditingId(null);
+                        setFormData(prev => ({ ...initialFormState, estudiante_id: caso.estudiante?.id || '' }));
+                        setShowModal(true);
+                      }}
+                      className="inline-flex items-center px-3 py-1 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors mr-3"
+                      title="Agregar seguimiento"
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Agregar
                     </button>
                     {permisos?.can_download && (
                       <button 
                         onClick={(e) => { 
                           e.stopPropagation(); 
-                          
                           setPrintData({ 
                             estudiantes: caso.estudiante,
                             fecha: new Date().toISOString().split('T')[0]

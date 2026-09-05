@@ -26,21 +26,27 @@ export async function guardarDocumento(atencionData, tipoFormato, extra = {}) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('No autenticado');
 
+    // Si extra es un array (buildPdfData con multi-página), tomar solo el último snapshot (el actual editado)
+    const extraObj = Array.isArray(extra) ? (extra[extra.length - 1] || {}) : (extra || {});
+
     const est = atencionData?.estudiantes || atencionData?.estudiante || {};
     const nombreEstudiante = est.nombres && est.apellidos
       ? `${est.nombres} ${est.apellidos}`.trim()
-      : (est.nombres || atencionData?.nombre_estudiante || 'Estudiante desconocido');
+      : (est.nombres || atencionData?.nombre_estudiante || extraObj?.nombre_estudiante || 'Estudiante desconocido');
 
     const estudianteId = est?.id || atencionData?.estudiante_id || null;
 
-    // Construir el snapshot de esta página/atención
+    // Construir el snapshot de esta página/atención usando el estado del formulario
     const nuevoSnapshot = {
-      fecha: atencionData?.fecha || new Date().toLocaleDateString('es-CO'),
-      grado: est?.grado || atencionData?.grado || '',
-      documento: est?.documento || atencionData?.documento || '',
-      motivos: atencionData?.motivos || [],
+      fecha: new Date().toLocaleDateString('es-CO'),
+      grado: est?.grado || '',
+      documento: est?.documento || '',
       ...atencionData,
-      ...extra,
+      ...extraObj,
+      // Asegurar que _snapshots no se almacene dentro de un snapshot
+      _snapshots: undefined,
+      _esMultiPagina: undefined,
+      _totalPaginas: undefined,
     };
 
     // Buscar si ya existe un documento para este estudiante y formato

@@ -88,48 +88,48 @@ export default function PrintAtencionEscolarTemplate({ data, onClose }) {
     return val;
   };
 
-  // Estado editable
+  // Estado editable — leer primero desde data (snapshot guardado), luego derivar de estudiante
   const [fields, setFields] = useState({
-    fecha: data.fecha || '',
-    sede: 'PRINCIPAL',
-    jornada: jornadaInit,
-    grado: gradoInit,
-    director_grupo: '',
-    apellido1: apellido1,
-    apellido2: apellido2,
-    nombres: nombresPart,
-    tipo_documento: 'T.I',
-    numero_documento: est.documento || '',
-    sexo: est.genero || '',
-    fecha_nacimiento: '',
-    edad: est.edad ? est.edad.toString() : '',
-    lugar_nacimiento: '',
-    telefono_contacto: est.telefono || '',
-    direccion_residencia: est.direccion || '',
-    eps: est.eps || '',
+    fecha: data.fecha || new Date().toLocaleDateString('es-CO'),
+    sede: data.sede || 'PRINCIPAL',
+    jornada: data.jornada || jornadaInit,
+    grado: data.grado || gradoInit,
+    director_grupo: data.director_grupo || '',
+    apellido1: data.apellido1 || apellido1,
+    apellido2: data.apellido2 || apellido2,
+    nombres: data.nombres || nombresPart,
+    tipo_documento: data.tipo_documento || 'T.I',
+    numero_documento: data.numero_documento || est.documento || '',
+    sexo: data.sexo || est.genero || '',
+    fecha_nacimiento: data.fecha_nacimiento || '',
+    edad: data.edad || (est.edad ? est.edad.toString() : ''),
+    lugar_nacimiento: data.lugar_nacimiento || '',
+    telefono_contacto: data.telefono_contacto || est.telefono || '',
+    direccion_residencia: data.direccion_residencia || est.direccion || '',
+    eps: data.eps || est.eps || '',
     
-    padre_nombre: '', padre_telefono: '', padre_ocupacion: '', padre_escolaridad: '',
-    madre_nombre: '', madre_telefono: '', madre_ocupacion: '', madre_escolaridad: '',
-    acudiente_nombre: acudienteNombre || '', acudiente_telefono: acudienteTelefono || '', acudiente_ocupacion: '', acudiente_parentesco: acudienteParentesco || '',
+    padre_nombre: data.padre_nombre || '', padre_telefono: data.padre_telefono || '', padre_ocupacion: data.padre_ocupacion || '', padre_escolaridad: data.padre_escolaridad || '',
+    madre_nombre: data.madre_nombre || '', madre_telefono: data.madre_telefono || '', madre_ocupacion: data.madre_ocupacion || '', madre_escolaridad: data.madre_escolaridad || '',
+    acudiente_nombre: data.acudiente_nombre || acudienteNombre || '', acudiente_telefono: data.acudiente_telefono || acudienteTelefono || '', acudiente_ocupacion: data.acudiente_ocupacion || '', acudiente_parentesco: data.acudiente_parentesco || acudienteParentesco || '',
     
-    num_hermanos: '', lugar_hermanos: '',
+    num_hermanos: data.num_hermanos || '', lugar_hermanos: data.lugar_hermanos || '',
     vive_con: safeParse(data.vive_con, {}), vive_con_otros: data.vive_con_otros || '',
     descripcion_familiar: data.descripcion_familiar || '',
     
-    nombre_remite: data.nombre_remitente || '',
-    cargo_remite: data.cargo_remitente || '',
+    nombre_remite: data.nombre_remite || data.nombre_remitente || '',
+    cargo_remite: data.cargo_remite || data.cargo_remitente || '',
     motivos: safeParse(data.motivos || data.motivos_remision, []),
-    motivo_otro: data.motivos_otros || data.motivo_otro || '',
+    motivo_otro: data.motivo_otro || data.motivos_otros || '',
     
-    descripcion_situacion: data.descripcion || '',
+    descripcion_situacion: data.descripcion_situacion || data.descripcion || '',
     observaciones: data.observaciones || data.orientaciones || '',
     
     seguimientos: data.seguimientos || Array.from({ length: 4 }, () => ({ fecha: '', descripcion: '', acuerdos: '' })),
-    orientaciones: '',
+    orientaciones: data.orientaciones || '',
     
-    fecha_firma_orientador: '',
-    fecha_firma_acudiente: '',
-    fecha_firma_estudiante: ''
+    fecha_firma_orientador: data.fecha_firma_orientador || '',
+    fecha_firma_acudiente: data.fecha_firma_acudiente || '',
+    fecha_firma_estudiante: data.fecha_firma_estudiante || ''
   });
 
   const [firmasData, setFirmasData] = useState({

@@ -34,23 +34,24 @@ export default function PrintConsentimientoTemplate({ data, onClose }) {
   const gMatch = gradoInit.match(/(.*?)-(MA[ÑN]ANA|TARDE|NOCHE|SABATINA|UNICA)$/i);
   if (gMatch) gradoInit = gMatch[1];
 
-  // Estado editable con todos los campos
+  // Estado editable con todos los campos — leer primero desde data (snapshot guardado)
   const [editMode, setEditMode] = useState(true);
   const [fields, setFields] = useState({
-    nombre_estudiante: `${est.nombres || ''} ${est.apellidos || ''}`.trim(),
-    documento_estudiante: est.documento || '',
-    grado: gradoInit,
-    nombre_acudiente: `${acu.nombres || ''} ${acu.apellidos || ''}`.trim(),
-    documento_acudiente: acu.documento || '',
-    parentesco: acu.parentesco || 'Acudiente',
+    nombre_estudiante: data?.nombre_estudiante || `${est.nombres || ''} ${est.apellidos || ''}`.trim(),
+    documento_estudiante: data?.documento_estudiante || est.documento || '',
+    grado: data?.grado || gradoInit,
+    nombre_acudiente: data?.nombre_acudiente || `${acu.nombres || ''} ${acu.apellidos || ''}`.trim(),
+    documento_acudiente: data?.documento_acudiente || acu.documento || '',
+    parentesco: data?.parentesco || acu.parentesco || 'Acudiente',
     fecha: data?.fecha || new Date().toLocaleDateString('es-CO'),
-    tipo_doc_estudiante: 'TI',
-    edad_estudiante: '',
-    tipo_doc_acudiente: 'CC',
-    tipo_doc_orientador: 'CC',
-    doc_orientador: '',
-    nombre_orientador: '',
-    tp_orientador: '',
+    tipo_doc_estudiante: data?.tipo_doc_estudiante || 'TI',
+    edad_estudiante: data?.edad_estudiante || '',
+    tipo_doc_acudiente: data?.tipo_doc_acudiente || 'CC',
+    tipo_doc_orientador: data?.tipo_doc_orientador || 'CC',
+    doc_orientador: data?.doc_orientador || '',
+    nombre_orientador: data?.nombre_orientador || '',
+    tp_orientador: data?.tp_orientador || '',
+    observaciones: data?.observaciones_extra || data?.observaciones || '',
   });
 
   const [firmasData, setFirmasData] = useState({

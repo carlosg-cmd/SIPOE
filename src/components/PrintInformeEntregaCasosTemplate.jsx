@@ -45,26 +45,26 @@ export default function PrintInformeEntregaCasosTemplate({ data, onClose }) {
   const today = new Date().toISOString().split('T')[0];
 
   const [fields, setFields] = useState({
-    institucion_educativa: 'INSTITUCIÓN EDUCATIVA DIVINO NIÑO',
+    institucion_educativa: data.institucion_educativa || 'INSTITUCIÓN EDUCATIVA DIVINO NIÑO',
     fecha: data.fecha || today,
-    nombre_estudiante: nombreCompleto,
-    grado: gradoInit,
-    edad: est.fecha_nacimiento ? Math.floor((new Date() - new Date(est.fecha_nacimiento)) / 31557600000).toString() : '',
-    tipo_documento: est.tipo_documento || '',
-    numero_documento: est.numero_documento || '',
-    ciudad_nacimiento: est.lugar_nacimiento || '',
-    nombre_acudiente: est.datos_acudiente?.nombres ? `${est.datos_acudiente.nombres} ${est.datos_acudiente.apellidos || ''}`.trim() : (est.nombre_acudiente || ''),
-    telefono_contacto: est.datos_acudiente?.telefono || est.telefono_acudiente || '',
+    nombre_estudiante: data.nombre_estudiante || nombreCompleto,
+    grado: data.grado || gradoInit,
+    edad: data.edad || (est.fecha_nacimiento ? Math.floor((new Date() - new Date(est.fecha_nacimiento)) / 31557600000).toString() : ''),
+    tipo_documento: data.tipo_documento || est.tipo_documento || '',
+    numero_documento: data.numero_documento || est.numero_documento || '',
+    ciudad_nacimiento: data.ciudad_nacimiento || est.lugar_nacimiento || '',
+    nombre_acudiente: data.nombre_acudiente || (est.datos_acudiente?.nombres ? `${est.datos_acudiente.nombres} ${est.datos_acudiente.apellidos || ''}`.trim() : (est.nombre_acudiente || '')),
+    telefono_contacto: data.telefono_contacto || est.datos_acudiente?.telefono || est.telefono_acudiente || '',
     
     motivos_activacion: safeParse(data.motivos_activacion, []),
     motivo_otro: data.motivo_otro || '',
     
-    descripcion_situacion: data.motivo_consulta || data.observaciones || '',
+    descripcion_situacion: data.descripcion_situacion || data.motivo_consulta || data.observaciones || '',
     
     acciones_realizadas: safeParse(data.acciones_realizadas, []),
-    observaciones_adicionales: '',
+    observaciones_adicionales: data.observaciones_adicionales || '',
     
-    correo_ins_edu: 'inedin2021@gmail.com'
+    correo_ins_edu: data.correo_ins_edu || 'inedin2021@gmail.com'
   });
 
   const [firmasData, setFirmasData] = useState({
