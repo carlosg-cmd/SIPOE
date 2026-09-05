@@ -4,6 +4,7 @@ import { HashRouter } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { SyncProvider } from './contexts/SyncContext'
+import { SettingsProvider } from './contexts/SettingsContext'
 import App from './App.jsx'
 import './index.css'
 
@@ -20,12 +21,14 @@ if ('serviceWorker' in navigator) {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <AuthProvider>
-    <ThemeProvider>
-      <SyncProvider>
-        <HashRouter>
-          <App />
-        </HashRouter>
-      </SyncProvider>
-    </ThemeProvider>
+    <SettingsProvider>
+      <ThemeProvider>
+        <SyncProvider>
+          <HashRouter>
+            <App />
+          </HashRouter>
+        </SyncProvider>
+      </ThemeProvider>
+    </SettingsProvider>
   </AuthProvider>
 );

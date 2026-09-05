@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 import { useNavigate } from 'react-router-dom';
-import { KeyRound, Mail, AlertCircle, Loader2, UserPlus, LogIn, Eye, EyeOff } from 'lucide-react';
+import { KeyRound, Mail, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -98,79 +98,42 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050b14] relative overflow-hidden flex flex-col items-center justify-center p-4 font-sans text-slate-100 selection:bg-cyan-500 selection:text-black">
+    <div 
+      className="min-h-screen relative overflow-hidden flex flex-col items-center justify-center p-4 font-sans text-white selection:bg-white/30"
+      style={{ background: 'linear-gradient(135deg, #2C5F7C 0%, #3E93A8 50%, #9FD9C8 100%)' }}
+    >
       
-      {/* ── Fondo Futurista: Red Neuronal & Gradientes de Luz ── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Luces Ambientales Neón */}
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-cyan-500/15 rounded-full blur-[120px]"></div>
-        <div className="absolute -bottom-32 left-1/4 w-[500px] h-[350px] bg-purple-600/15 rounded-full blur-[140px]"></div>
-        <div className="absolute top-1/3 right-10 w-[400px] h-[300px] bg-blue-600/10 rounded-full blur-[100px]"></div>
-
-        {/* Cuadrícula de Red Tecnológica SVG */}
-        <svg className="absolute inset-0 w-full h-full opacity-25" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#22d3ee" stopOpacity="0" />
-            </radialGradient>
-            <pattern id="techGrid" width="80" height="80" patternUnits="userSpaceOnUse">
-              <path d="M 80 0 L 0 0 0 80" fill="none" stroke="rgba(34, 211, 238, 0.08)" strokeWidth="1" />
-              <circle cx="80" cy="80" r="1.5" fill="rgba(34, 211, 238, 0.4)" />
-              <circle cx="0" cy="0" r="1.5" fill="rgba(168, 85, 247, 0.4)" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#techGrid)" />
-          {/* Constelaciones / Líneas de Nodos Neurales */}
-          <line x1="10%" y1="20%" x2="25%" y2="35%" stroke="rgba(34, 211, 238, 0.2)" strokeWidth="1" />
-          <line x1="25%" y1="35%" x2="40%" y2="15%" stroke="rgba(168, 85, 247, 0.2)" strokeWidth="1" />
-          <line x1="70%" y1="15%" x2="85%" y2="40%" stroke="rgba(34, 211, 238, 0.25)" strokeWidth="1" />
-          <line x1="85%" y1="40%" x2="75%" y2="75%" stroke="rgba(59, 130, 246, 0.2)" strokeWidth="1" />
-          <line x1="15%" y1="65%" x2="30%" y2="80%" stroke="rgba(168, 85, 247, 0.25)" strokeWidth="1" />
-          
-          <circle cx="10%" cy="20%" r="3" fill="#22d3ee" className="animate-pulse" />
-          <circle cx="25%" cy="35%" r="4" fill="#a855f7" />
-          <circle cx="70%" cy="15%" r="3" fill="#38bdf8" />
-          <circle cx="85%" cy="40%" r="4" fill="#22d3ee" className="animate-pulse" />
-          <circle cx="75%" cy="75%" r="3" fill="#a855f7" />
-          <circle cx="30%" cy="80%" r="3" fill="#38bdf8" />
-        </svg>
-      </div>
-
-      {/* ── Contenedor Principal con Efecto Glassmorphism ── */}
+      {/* ── Contenedor Principal ── */}
       <div className="relative z-10 w-full max-w-[440px]">
         <motion.div
           initial={{ opacity: 0, y: 25, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="relative rounded-[28px] p-8 sm:p-9 bg-slate-950/60 backdrop-blur-2xl border border-cyan-500/30 shadow-[0_0_50px_-10px_rgba(6,182,212,0.25),0_0_30px_-5px_rgba(168,85,247,0.2)] overflow-hidden"
+          className="relative rounded-[28px] p-8 sm:p-9 shadow-2xl overflow-hidden"
+          style={{ backgroundColor: '#4FB8CE' }}
         >
-          {/* Borde Neón Resplandeciente con Gradiente */}
-          <div className="absolute inset-0 rounded-[28px] pointer-events-none p-[1px] bg-gradient-to-b from-cyan-400/40 via-purple-500/20 to-cyan-400/30 -z-10"></div>
           
-          {/* Efecto de partículas superiores */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/10 rounded-full blur-2xl pointer-events-none"></div>
-
           {/* ── Encabezado & Logo Futurista ── */}
           <div className="text-center mb-7">
             <div className="flex items-center justify-center gap-3 mb-2">
-              {/* Escudo Tecnológico Neón */}
               <div className="relative w-12 h-12 flex items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500 to-purple-600 rounded-xl blur-md opacity-70"></div>
-                <div className="relative w-12 h-12 rounded-xl bg-slate-900 border border-cyan-400/60 flex items-center justify-center shadow-inner">
-                  <svg className="w-7 h-7 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <div 
+                  className="relative w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
+                  style={{ background: 'linear-gradient(135deg, #378ADD 0%, #1D9E75 100%)' }}
+                >
+                  <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                     <path d="m9 12 2 2 4-4"/>
                   </svg>
                 </div>
               </div>
               <div className="text-left">
-                <h1 className="text-3xl font-extrabold tracking-wider bg-gradient-to-r from-white via-cyan-200 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(34,211,238,0.4)]">
+                <h1 className="text-3xl font-extrabold tracking-wider text-white drop-shadow-sm">
                   SIPOE
                 </h1>
               </div>
             </div>
-            <p className="text-[10px] sm:text-[11px] font-semibold text-cyan-300/80 tracking-wider uppercase mt-1">
+            <p className="text-[10px] sm:text-[11px] font-bold text-white/90 tracking-wider uppercase mt-1">
               SISTEMA DE INFORMACIÓN PARA ORIENTACIÓN ESCOLAR
             </p>
           </div>
@@ -181,7 +144,7 @@ export default function Login() {
               {view === 'register' && 'SOLICITAR ACCESO'}
               {view === 'recovery' && 'RECUPERAR CONTRASEÑA'}
             </h2>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-white/80 mt-1">
               {view === 'login' && 'Accede a tu cuenta SIPOE'}
               {view === 'register' && 'Ingresa tus datos para crear una cuenta'}
               {view === 'recovery' && 'Te enviaremos las instrucciones a tu correo'}
@@ -193,9 +156,9 @@ export default function Login() {
             <motion.div 
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-5 p-3.5 rounded-xl bg-red-950/50 border border-red-500/40 text-red-300 flex items-start text-xs backdrop-blur-md"
+              className="mb-5 p-3.5 rounded-xl bg-red-500/20 border border-red-200 text-white flex items-start text-xs font-medium"
             >
-              <AlertCircle size={16} className="mr-2 mt-0.5 flex-shrink-0 text-red-400" />
+              <AlertCircle size={16} className="mr-2 mt-0.5 flex-shrink-0 text-red-200" />
               <span>{error}</span>
             </motion.div>
           )}
@@ -204,9 +167,9 @@ export default function Login() {
             <motion.div 
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-5 p-3.5 rounded-xl bg-emerald-950/50 border border-emerald-500/40 text-emerald-300 flex items-start text-xs backdrop-blur-md"
+              className="mb-5 p-3.5 rounded-xl bg-emerald-500/20 border border-emerald-200 text-white flex items-start text-xs font-medium"
             >
-              <AlertCircle size={16} className="mr-2 mt-0.5 flex-shrink-0 text-emerald-400" />
+              <AlertCircle size={16} className="mr-2 mt-0.5 flex-shrink-0 text-emerald-200" />
               <span>{successMsg}</span>
             </motion.div>
           )}
@@ -226,7 +189,7 @@ export default function Login() {
                 {/* Campo Correo */}
                 <div>
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-cyan-400/60 group-focus-within:text-cyan-300 transition-colors">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none transition-colors" style={{ color: '#4A4A48' }}>
                       <Mail size={17} />
                     </div>
                     <input
@@ -235,7 +198,7 @@ export default function Login() {
                       autoComplete="off"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-slate-900/70 border border-cyan-500/30 rounded-xl focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all"
+                      className="w-full pl-10 pr-4 py-3 bg-white/90 border-0 rounded-xl focus:ring-2 focus:ring-white/50 text-sm text-[#4A4A48] placeholder-[#4A4A48]/60 outline-none transition-all font-medium"
                       placeholder="Correo Electrónico"
                     />
                   </div>
@@ -244,7 +207,7 @@ export default function Login() {
                 {/* Campo Contraseña */}
                 <div>
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-cyan-400/60 group-focus-within:text-cyan-300 transition-colors">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none transition-colors" style={{ color: '#4A4A48' }}>
                       <KeyRound size={17} />
                     </div>
                     <input
@@ -253,13 +216,14 @@ export default function Login() {
                       autoComplete="new-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-10 pr-10 py-3 bg-slate-900/70 border border-cyan-500/30 rounded-xl focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all"
+                      className="w-full pl-10 pr-10 py-3 bg-white/90 border-0 rounded-xl focus:ring-2 focus:ring-white/50 text-sm text-[#4A4A48] placeholder-[#4A4A48]/60 outline-none transition-all font-medium"
                       placeholder="Contraseña"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-cyan-300 transition-colors"
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center hover:opacity-70 transition-opacity"
+                      style={{ color: '#4A4A48' }}
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -268,24 +232,25 @@ export default function Login() {
                     <button
                       type="button"
                       onClick={() => { setView('recovery'); setError(null); setSuccessMsg(null); }}
-                      className="text-[11px] text-cyan-400/80 hover:text-cyan-300 underline underline-offset-2 transition-colors"
+                      className="text-[11px] text-white/90 hover:text-white underline underline-offset-2 transition-colors font-medium"
                     >
                       ¿Olvidé mi contraseña?
                     </button>
                   </div>
                 </div>
 
-                {/* Botón Neón Principal: INGRESAR AL SISTEMA */}
+                {/* Botón Principal */}
                 <motion.button
-                  whileHover={{ scale: 1.015, boxShadow: "0 0 25px rgba(6, 182, 212, 0.6)" }}
+                  whileHover={{ scale: 1.015 }}
                   whileTap={{ scale: 0.985 }}
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 px-4 rounded-xl font-extrabold text-sm tracking-wider uppercase text-slate-950 bg-gradient-to-r from-cyan-400 via-teal-300 to-fuchsia-500 shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:brightness-110 disabled:opacity-60 transition-all flex items-center justify-center cursor-pointer mt-2"
+                  style={{ backgroundColor: '#4A4A48' }}
+                  className="w-full py-3 px-4 rounded-xl font-bold text-sm tracking-wider uppercase text-white shadow-lg hover:brightness-110 disabled:opacity-60 transition-all flex items-center justify-center cursor-pointer mt-2"
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4 text-slate-950" />
+                      <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
                       Procesando...
                     </>
                   ) : (
@@ -300,7 +265,7 @@ export default function Login() {
                   type="button"
                   disabled={loading}
                   onClick={handleGoogleLogin}
-                  className="w-full py-2.5 px-4 rounded-xl font-bold text-sm text-slate-800 bg-white hover:bg-slate-100 shadow-[0_2px_15px_rgba(255,255,255,0.15)] disabled:opacity-60 transition-all flex items-center justify-center cursor-pointer"
+                  className="w-full py-2.5 px-4 rounded-xl font-bold text-sm text-[#4A4A48] bg-white hover:bg-slate-50 shadow-md disabled:opacity-60 transition-all flex items-center justify-center cursor-pointer"
                 >
                   <svg className="w-4 h-4 mr-2.5" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
@@ -316,7 +281,7 @@ export default function Login() {
                   <button
                     type="button"
                     onClick={() => { setView('register'); setError(null); setSuccessMsg(null); }}
-                    className="text-xs font-medium text-cyan-400 hover:text-cyan-300 underline underline-offset-4 transition-colors"
+                    className="text-xs font-bold text-white/90 hover:text-white underline underline-offset-4 transition-colors"
                   >
                     Registrarse
                   </button>
@@ -336,7 +301,7 @@ export default function Login() {
               >
                 <div>
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-cyan-400/60 group-focus-within:text-cyan-300 transition-colors">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none transition-colors" style={{ color: '#4A4A48' }}>
                       <Mail size={17} />
                     </div>
                     <input
@@ -344,7 +309,7 @@ export default function Login() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-slate-900/70 border border-cyan-500/30 rounded-xl focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all"
+                      className="w-full pl-10 pr-4 py-3 bg-white/90 border-0 rounded-xl focus:ring-2 focus:ring-white/50 text-sm text-[#4A4A48] placeholder-[#4A4A48]/60 outline-none transition-all font-medium"
                       placeholder="Correo Electrónico"
                     />
                   </div>
@@ -352,7 +317,7 @@ export default function Login() {
 
                 <div>
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-cyan-400/60 group-focus-within:text-cyan-300 transition-colors">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none transition-colors" style={{ color: '#4A4A48' }}>
                       <KeyRound size={17} />
                     </div>
                     <input
@@ -360,7 +325,7 @@ export default function Login() {
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-slate-900/70 border border-cyan-500/30 rounded-xl focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all"
+                      className="w-full pl-10 pr-4 py-3 bg-white/90 border-0 rounded-xl focus:ring-2 focus:ring-white/50 text-sm text-[#4A4A48] placeholder-[#4A4A48]/60 outline-none transition-all font-medium"
                       placeholder="Crear Contraseña (mínimo 6 carácteres)"
                       minLength={6}
                     />
@@ -368,15 +333,16 @@ export default function Login() {
                 </div>
 
                 <motion.button
-                  whileHover={{ scale: 1.015, boxShadow: "0 0 25px rgba(6, 182, 212, 0.6)" }}
+                  whileHover={{ scale: 1.015 }}
                   whileTap={{ scale: 0.985 }}
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 px-4 rounded-xl font-extrabold text-sm tracking-wider uppercase text-slate-950 bg-gradient-to-r from-cyan-400 via-teal-300 to-fuchsia-500 shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:brightness-110 disabled:opacity-60 transition-all flex items-center justify-center cursor-pointer mt-3"
+                  style={{ backgroundColor: '#4A4A48' }}
+                  className="w-full py-3 px-4 rounded-xl font-bold text-sm tracking-wider uppercase text-white shadow-lg hover:brightness-110 disabled:opacity-60 transition-all flex items-center justify-center cursor-pointer mt-3"
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4 text-slate-950" />
+                      <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
                       Registrando...
                     </>
                   ) : (
@@ -387,7 +353,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => { setView('login'); setError(null); setSuccessMsg(null); }}
-                  className="w-full py-2.5 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+                  className="w-full py-2.5 text-xs font-bold text-white/80 hover:text-white transition-colors"
                 >
                   ← Volver al Login
                 </button>
@@ -406,7 +372,7 @@ export default function Login() {
               >
                 <div>
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-cyan-400/60 group-focus-within:text-cyan-300 transition-colors">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none transition-colors" style={{ color: '#4A4A48' }}>
                       <Mail size={17} />
                     </div>
                     <input
@@ -414,22 +380,23 @@ export default function Login() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-slate-900/70 border border-cyan-500/30 rounded-xl focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all"
+                      className="w-full pl-10 pr-4 py-3 bg-white/90 border-0 rounded-xl focus:ring-2 focus:ring-white/50 text-sm text-[#4A4A48] placeholder-[#4A4A48]/60 outline-none transition-all font-medium"
                       placeholder="Correo Electrónico"
                     />
                   </div>
                 </div>
 
                 <motion.button
-                  whileHover={{ scale: 1.015, boxShadow: "0 0 25px rgba(6, 182, 212, 0.6)" }}
+                  whileHover={{ scale: 1.015 }}
                   whileTap={{ scale: 0.985 }}
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 px-4 rounded-xl font-extrabold text-sm tracking-wider uppercase text-slate-950 bg-gradient-to-r from-cyan-400 via-teal-300 to-fuchsia-500 shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:brightness-110 disabled:opacity-60 transition-all flex items-center justify-center cursor-pointer mt-3"
+                  style={{ backgroundColor: '#4A4A48' }}
+                  className="w-full py-3 px-4 rounded-xl font-bold text-sm tracking-wider uppercase text-white shadow-lg hover:brightness-110 disabled:opacity-60 transition-all flex items-center justify-center cursor-pointer mt-3"
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4 text-slate-950" />
+                      <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
                       Enviando enlace...
                     </>
                   ) : (
@@ -440,7 +407,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => { setView('login'); setError(null); setSuccessMsg(null); }}
-                  className="w-full py-2.5 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+                  className="w-full py-2.5 text-xs font-bold text-white/80 hover:text-white transition-colors"
                 >
                   ← Volver al Login
                 </button>
@@ -450,10 +417,10 @@ export default function Login() {
         </motion.div>
       </div>
 
-      {/* ── Pie de Página Futurista ── */}
+      {/* ── Pie de Página ── */}
       <footer className="relative z-10 mt-8 text-center px-4">
-        <p className="text-[11px] text-slate-400 font-medium tracking-wide">
-          SIPOE v1.0 | © 2026 Todos los derechos reservados | Desarrollado por Carlos Andres Jimenez M
+        <p className="text-[11px] text-white/80 font-medium tracking-wide">
+          SIPOE v1.0 | © 2026 Todos los derechos reservados | Desarrollado por Carlos Andrés Jiménez Murillo
         </p>
       </footer>
     </div>
