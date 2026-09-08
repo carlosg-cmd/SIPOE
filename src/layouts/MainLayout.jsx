@@ -1,7 +1,7 @@
 import { Outlet, Navigate, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../supabase';
-import { LogOut, ChevronDown, ChevronRight, Menu } from 'lucide-react';
+import { LogOut, ChevronRight, Menu } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSettings } from '../contexts/SettingsContext';
@@ -10,7 +10,6 @@ export default function MainLayout() {
   const { session, userProfile } = useAuth();
   const { settings } = useSettings();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [expandedMenus, setExpandedMenus] = useState({});
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -20,13 +19,6 @@ export default function MainLayout() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-  };
-
-  const toggleMenu = (menuName) => {
-    setExpandedMenus(prev => ({
-      ...prev,
-      [menuName]: !prev[menuName]
-    }));
   };
 
   const menuConfig = [
@@ -85,7 +77,7 @@ export default function MainLayout() {
       >
         <div className="h-full flex flex-col">
           {/* Logo */}
-          <div className="h-[72px] flex items-center px-6 border-b border-white/10 shrink-0">
+          <div className="h-[72px] flex items-center px-6 border-b border-white/20 shrink-0">
             <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center mr-3">
                <div className="w-3.5 h-3.5 rounded-full bg-[#185FA5]" />
             </div>
@@ -93,63 +85,52 @@ export default function MainLayout() {
           </div>
 
           {/* Menú de Navegación */}
-          <div className="flex-1 overflow-y-auto py-4 scrollbar-thin scrollbar-thumb-white/20">
-            <nav className="space-y-1">
+          <div className="flex-1 py-4">
+            <nav className="space-y-0">
               {menuConfig.map((item) => {
                 const isAccordion = !!item.subItems;
                 const isActive = item.path ? location.pathname === item.path : false;
-                const isExpanded = expandedMenus[item.name];
                 
                 // Si la ruta actual coincide con algún subítem
                 const hasActiveSub = isAccordion && item.subItems.some(sub => location.pathname === sub.path || location.pathname.startsWith(sub.path));
 
                 return (
-                  <div key={item.name}>
+                  <div key={item.name} className="relative group border-b border-white/20 last:border-0">
                     {isAccordion ? (
                       <button
-                        onClick={() => toggleMenu(item.name)}
-                        className={`w-full flex items-center justify-between px-6 py-3 text-sm font-medium transition-colors hover:bg-white/10 ${hasActiveSub ? 'bg-[#1E4D8C] border-l-4 border-white' : 'border-l-4 border-transparent'}`}
+                        className={`w-full flex items-center justify-between px-6 py-3.5 text-sm font-bold uppercase tracking-wider transition-colors group-hover:bg-[#00A67E] ${hasActiveSub ? 'bg-[#00A67E]' : ''}`}
                       >
                         <div className="flex items-center">
-                          <span className="w-6 text-center mr-2 opacity-80">{item.icon}</span>
+                          <span className="w-6 text-center mr-2 text-xl opacity-80">{item.icon}</span>
                           {item.name}
                         </div>
-                        {isExpanded ? <ChevronDown size={16} className="opacity-70" /> : <ChevronRight size={16} className="opacity-70" />}
+                        <ChevronRight size={16} className="opacity-90" />
                       </button>
                     ) : (
                       <Link
                         to={item.path}
                         onClick={() => setSidebarOpen(false)}
-                        className={`w-full flex items-center px-6 py-3 text-sm font-medium transition-colors hover:bg-white/10 ${isActive ? 'bg-[#1E4D8C] border-l-4 border-white' : 'border-l-4 border-transparent'}`}
+                        className={`w-full flex items-center px-6 py-3.5 text-sm font-bold uppercase tracking-wider transition-colors hover:bg-[#00A67E] ${isActive ? 'bg-[#00A67E]' : ''}`}
                       >
-                        <span className="w-6 text-center mr-2 opacity-80">{item.icon}</span>
+                        <span className="w-6 text-center mr-2 text-xl opacity-80">{item.icon}</span>
                         {item.name}
                       </Link>
                     )}
 
-                    {/* Submenús */}
+                    {/* Submenú (Flyout) */}
                     {isAccordion && (
-                      <AnimatePresence>
-                        {isExpanded && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden bg-[#124982] shadow-inner"
+                      <div className="absolute left-full top-0 hidden group-hover:block min-w-[220px] bg-[#E2E8F0] shadow-xl border border-slate-300 z-50">
+                        {item.subItems.map(sub => (
+                          <Link
+                            key={sub.name}
+                            to={sub.path}
+                            onClick={() => setSidebarOpen(false)}
+                            className={`block w-full text-left px-4 py-2.5 text-sm font-medium border-b border-slate-300 last:border-0 transition-colors hover:bg-slate-300 text-slate-800 ${location.pathname === sub.path ? 'bg-slate-300' : ''}`}
                           >
-                            {item.subItems.map(sub => (
-                              <Link
-                                key={sub.name}
-                                to={sub.path}
-                                onClick={() => setSidebarOpen(false)}
-                                className={`block w-full text-left pl-14 pr-6 py-2.5 text-sm transition-colors hover:bg-white/10 ${location.pathname === sub.path ? 'text-white font-semibold' : 'text-white/70'}`}
-                              >
-                                {sub.name}
-                              </Link>
-                            ))}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                            {sub.name}
+                          </Link>
+                        ))}
+                      </div>
                     )}
                   </div>
                 );
@@ -158,10 +139,10 @@ export default function MainLayout() {
           </div>
 
           {/* Botón de Cerrar Sesión */}
-          <div className="shrink-0 p-4 border-t border-white/10">
+          <div className="shrink-0 p-4 border-t border-white/20">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center px-4 py-2.5 text-sm font-medium rounded-lg text-white/80 hover:bg-white/10 transition-colors"
+              className="w-full flex items-center px-4 py-2.5 text-sm font-medium rounded-lg text-white hover:bg-white/10 transition-colors"
             >
               <LogOut className="mr-3 h-5 w-5" />
               Cerrar sesión
