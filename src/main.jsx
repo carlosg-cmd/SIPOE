@@ -8,13 +8,16 @@ import { SettingsProvider } from './contexts/SettingsContext'
 import App from './App.jsx'
 import './index.css'
 
-// Limpiar service workers viejos para evitar conflictos de caché
+// Manejo de errores de carga de chunks desactualizados por nuevas versiones
+window.addEventListener('vite:preloadError', () => {
+  window.location.reload();
+});
+
+// Limpiar o actualizar service workers viejos para evitar conflictos de caché
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(registrations => {
-    // Solo limpia si hay más de uno (el viejo)
-    if (registrations.length > 1) {
-      registrations.forEach(r => r.unregister());
-      window.location.reload();
+    for (const r of registrations) {
+      r.update();
     }
   });
 }

@@ -61,14 +61,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session?.user) {
-        fetchProfile(session.user.id).finally(() => setLoading(false));
-      } else {
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        setSession(session);
+        if (session?.user) {
+          fetchProfile(session.user.id).finally(() => setLoading(false));
+        } else {
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.error('Error al obtener sesión:', err);
         setLoading(false);
-      }
-    });
+      });
 
     const {
       data: { subscription },
@@ -87,7 +92,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ session, userProfile, permisos, loading }}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };
