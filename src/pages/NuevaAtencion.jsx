@@ -36,7 +36,11 @@ export default function NuevaAtencion() {
     activacion_ruta: '',
     formato_fisico: 'Si',
     director_grupo: '',
-    telefono: ''
+    telefono: '',
+    acudiente_nombres: '',
+    acudiente_apellidos: '',
+    acudiente_telefono: '',
+    acudiente_parentesco: ''
   };
 
   const [formData, setFormData] = useState(initialFormState);
@@ -189,17 +193,27 @@ export default function NuevaAtencion() {
       }
     }
 
-    // Actualizar estudiante si modificaron el director de grupo o el teléfono
+    // Actualizar estudiante si modificaron el director de grupo, el teléfono o los datos del acudiente
     const est = listaEstudiantes.find(e => e.id === formData.estudiante_id);
-    if (est && (formData.director_grupo !== est.director_grupo || formData.telefono !== est.telefono)) {
+    if (est) {
+      const currentAcudiente = est.datos_acudiente || {};
+      const newAcudiente = {
+        ...currentAcudiente,
+        nombres: formData.acudiente_nombres || currentAcudiente.nombres || '',
+        apellidos: formData.acudiente_apellidos || currentAcudiente.apellidos || '',
+        telefono: formData.acudiente_telefono || currentAcudiente.telefono || '',
+        parentesco: formData.acudiente_parentesco || currentAcudiente.parentesco || ''
+      };
+
       try {
         await saveSmartly('estudiantes', 'update', {
           id: formData.estudiante_id,
           director_grupo: formData.director_grupo || null,
-          telefono: formData.telefono || null
+          telefono: formData.telefono || null,
+          datos_acudiente: newAcudiente
         });
       } catch (estError) {
-        console.error("Error actualizando estudiante:", estError);
+        console.error("Error actualizando estudiante y acudiente:", estError);
       }
     }
 
@@ -214,11 +228,16 @@ export default function NuevaAtencion() {
   useEffect(() => {
     if (estudianteSeleccionado) {
       const sedeNombre = sedesDisponibles.find(s => s.toLowerCase().includes((estudianteSeleccionado.sede_id || '').toLowerCase())) || 'Divino Niño';
+      const acudiente = estudianteSeleccionado.datos_acudiente || {};
       setFormData(prev => ({ 
         ...prev, 
         sede: sedeNombre,
         director_grupo: estudianteSeleccionado.director_grupo || '',
-        telefono: estudianteSeleccionado.telefono || ''
+        telefono: estudianteSeleccionado.telefono || '',
+        acudiente_nombres: acudiente.nombres || '',
+        acudiente_apellidos: acudiente.apellidos || '',
+        acudiente_telefono: acudiente.telefono || '',
+        acudiente_parentesco: acudiente.parentesco || 'Madre'
       }));
     }
   }, [estudianteSeleccionado]);
@@ -363,16 +382,50 @@ export default function NuevaAtencion() {
                     className="w-full bg-transparent border-b border-indigo-200 focus:border-indigo-500 outline-none font-semibold text-slate-800 placeholder-indigo-300 py-1"
                   />
                 </div>
-                <div className="col-span-2 mt-2">
-                  <p className="text-slate-500 text-xs mb-1">Acudiente</p>
-                  <p className="font-semibold text-slate-800">
-                    {estudianteSeleccionado.datos_acudiente?.nombres} {estudianteSeleccionado.datos_acudiente?.apellidos} 
-                    {estudianteSeleccionado.datos_acudiente?.parentesco ? ` (${estudianteSeleccionado.datos_acudiente.parentesco})` : ''}
-                  </p>
-                </div>
-                <div className="col-span-2 mt-2">
-                  <p className="text-slate-500 text-xs mb-1">Tel. Acudiente</p>
-                  <p className="font-semibold text-slate-800">{estudianteSeleccionado.datos_acudiente?.telefono || 'No reg.'}</p>
+                <div className="col-span-2 md:col-span-4 mt-3 pt-3 border-t border-indigo-100">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-xs font-bold text-indigo-900 uppercase tracking-wider">
+                      Datos del Acudiente (Se guardan automáticamente en la ficha del estudiante)
+                    </h4>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="text-slate-500 text-xs mb-1 block font-medium">Nombres y Apellidos</label>
+                      <input 
+                        type="text" 
+                        placeholder="Nombre acudiente..."
+                        value={formData.acudiente_nombres}
+                        onChange={e => setFormData({...formData, acudiente_nombres: e.target.value})}
+                        className="w-full bg-white border border-indigo-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-indigo-400 outline-none text-sm font-semibold text-slate-800 placeholder-indigo-300"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-slate-500 text-xs mb-1 block font-medium">Teléfono / Celular</label>
+                      <input 
+                        type="text" 
+                        placeholder="Teléfono acudiente..."
+                        value={formData.acudiente_telefono}
+                        onChange={e => setFormData({...formData, acudiente_telefono: e.target.value})}
+                        className="w-full bg-white border border-indigo-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-indigo-400 outline-none text-sm font-semibold text-slate-800 placeholder-indigo-300"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-slate-500 text-xs mb-1 block font-medium">Parentesco</label>
+                      <select 
+                        value={formData.acudiente_parentesco || 'Madre'}
+                        onChange={e => setFormData({...formData, acudiente_parentesco: e.target.value})}
+                        className="w-full bg-white border border-indigo-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-indigo-400 outline-none text-sm font-semibold text-slate-800"
+                      >
+                        <option value="Madre">Madre</option>
+                        <option value="Padre">Padre</option>
+                        <option value="Abuelo/a">Abuelo/a</option>
+                        <option value="Tío/a">Tío/a</option>
+                        <option value="Hermano/a">Hermano/a</option>
+                        <option value="Tutor Legal">Tutor Legal</option>
+                        <option value="Otro">Otro</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

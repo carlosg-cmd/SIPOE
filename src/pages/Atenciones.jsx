@@ -267,10 +267,24 @@ export default function Atenciones() {
                         )}
                       </div>
 
+                        <Link 
+                          to={`/seguimientos?nuevo=true&estudiante_id=${a.estudiante_id}&atencion_id=${a.id}`}
+                          className="inline-flex items-center px-2.5 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors mr-2"
+                          title="Crear un anexo de seguimiento para este caso"
+                        >
+                          + Seguimiento
+                        </Link>
+                        <Link 
+                          to={`/seguimientos?estudiante_id=${a.estudiante_id}`}
+                          className="inline-flex items-center px-2.5 py-1 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors mr-3"
+                          title="Ver historial de seguimientos de este estudiante"
+                        >
+                          Historial
+                        </Link>
                         {permisos?.can_edit && (
                           <Link 
                             to={`/atenciones/nueva?editId=${a.id}`}
-                            className="text-amber-600 hover:text-amber-900 transition-colors mr-4 font-semibold"
+                            className="text-amber-600 hover:text-amber-900 transition-colors mr-3 font-semibold text-xs"
                             title="Editar esta atención"
                           >
                             Editar
@@ -282,21 +296,12 @@ export default function Atenciones() {
                               e.preventDefault();
                               eliminarAtencion(a.id);
                             }}
-                            className="text-red-600 hover:text-red-900 transition-colors mr-4 font-semibold"
+                            className="text-red-600 hover:text-red-900 transition-colors font-semibold text-xs"
                             title="Eliminar esta atención"
                           >
                             Eliminar
                           </button>
                         )}
-                        <button 
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setPrintState({ data: a, type: 'atencion' });
-                          }}
-                          className="text-emerald-600 hover:text-emerald-900 transition-colors font-semibold"
-                        >
-                          Seguimiento
-                        </button>
                     </td>
                   </tr>
                 ))}

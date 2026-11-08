@@ -26,9 +26,11 @@ export default function Seguimientos() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [expandedStudentId, setExpandedStudentId] = useState(null);
   const [printData, setPrintData] = useState(null);
+  const [atenciones, setAtenciones] = useState([]);
 
   const initialFormState = {
     estudiante_id: '',
+    atencion_id: '',
     fecha: new Date().toISOString().split('T')[0],
     tipo_seguimiento: 'Citación Acudiente',
     descripcion: '',
@@ -48,6 +50,17 @@ export default function Seguimientos() {
     'Otro'
   ];
 
+  async function fetchAtenciones() {
+    try {
+      const { data } = await supabase
+        .from('atenciones')
+        .select('id, estudiante_id, fecha, motivos, descripcion, observaciones, orientaciones')
+        .order('fecha', { ascending: false });
+      if (data) setAtenciones(data);
+    } catch (err) {
+      console.error('Error fetching atenciones:', err);
+    }
+  }
 
   async function fetchSeguimientos() {
     setLoading(true);
@@ -91,13 +104,18 @@ export default function Seguimientos() {
   useEffect(() => {
     fetchSeguimientos();
     fetchEstudiantes();
+    fetchAtenciones();
     
     const nuevo = searchParams.get('nuevo');
     const estId = searchParams.get('estudiante_id');
+    const atId = searchParams.get('atencion_id');
+
     if (nuevo === 'true' && estId) {
-      setFormData(prev => ({ ...prev, estudiante_id: estId }));
+      setFormData(prev => ({ ...prev, estudiante_id: estId, atencion_id: atId || '' }));
       setShowModal(true);
       setIsEditing(false);
+    } else if (estId) {
+      setExpandedStudentId(estId);
     }
   }, [searchParams]);
 
@@ -145,6 +163,7 @@ export default function Seguimientos() {
   const handleEdit = (seg) => {
     setFormData({
       estudiante_id: seg.estudiante_id,
+      atencion_id: seg.atencion_id || '',
       fecha: seg.fecha,
       tipo_seguimiento: seg.tipo_seguimiento,
       descripcion: seg.descripcion,
@@ -268,9 +287,16 @@ export default function Seguimientos() {
                     <h3 className="text-lg font-bold text-slate-900">
                       {caso.estudiante ? `${caso.estudiante.nombres} ${caso.estudiante.apellidos}` : 'Estudiante Borrado'}
                     </h3>
-                    <p className="text-sm text-slate-500 mt-1">
-                      {caso.estudiante?.grado} • <span className="font-semibold text-emerald-600">{cantidad} anexo{cantidad !== 1 && 's'} de seguimiento</span>
-                    </p>
+                    <div className="flex flex-wrap items-center gap-2 mt-1">
+                      <span className="text-sm text-slate-500">
+                        {caso.estudiante?.grado || 'Sin grado'} • <span className="font-semibold text-emerald-600">{cantidad} anexo{cantidad !== 1 && 's'} de seguimiento</span>
+                      </span>
+                      {caso.estudiante?.datos_acudiente?.nombres && (
+                        <span className="text-xs text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md font-medium">
+                          Acudiente: {caso.estudiante.datos_acudiente.nombres} ({caso.estudiante.datos_acudiente.telefono || 'Sin tel.'})
+                        </span>
+                      )}
+                    </div>
                   </div>
                   
                   <div className="flex items-center gap-4">
@@ -332,6 +358,31 @@ export default function Seguimientos() {
 
                 {isExpanded && (
                   <div className="bg-slate-50 border-t border-slate-100 p-5">
+                    {/* Tarjeta de Apertura de Caso / Atención Inicial */}
+                    {(() => {
+                      const atencionesEst = atenciones.filter(a => a.estudiante_id === caso.id);
+                      if (atencionesEst.length === 0) return null;
+                      return (
+                        <div className="mb-6 p-4 rounded-xl border border-blue-200 bg-blue-50/70 shadow-sm">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                            <span className="text-xs font-bold uppercase tracking-wider text-blue-900 flex items-center">
+                              <span className="w-2.5 h-2.5 rounded-full bg-blue-600 mr-2 inline-block shrink-0" />
+                              Apertura del Caso — Atención Inicial ({atencionesEst[0].fecha})
+                            </span>
+                            <span className="text-xs font-semibold text-blue-700 bg-white px-2.5 py-0.5 rounded border border-blue-200 self-start sm:self-auto">
+                              Motivo: {atencionesEst[0].motivos?.[0] || 'Atención general'}
+                            </span>
+                          </div>
+                          <p className="text-sm text-slate-700 whitespace-pre-wrap">{atencionesEst[0].descripcion}</p>
+                          {atencionesEst[0].orientaciones && (
+                            <p className="text-xs text-blue-900 mt-2 font-medium bg-blue-100/50 p-2 rounded-lg">
+                              <strong>Orientaciones iniciales:</strong> {atencionesEst[0].orientaciones}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })()}
+
                     <div className="relative border-l-2 border-emerald-100 ml-3 pl-6 space-y-6">
                       {caso.seguimientos.map((seg) => (
                         <div key={seg.id} className="relative">
@@ -481,6 +532,55 @@ export default function Seguimientos() {
                   />
                 </div>
               </div>
+
+              {/* Tarjeta de información precargada del estudiante y acudiente */}
+              {(() => {
+                const estSeleccionado = listaEstudiantes.find(e => e.id === formData.estudiante_id);
+                if (!estSeleccionado) return null;
+                const atencionesEst = atenciones.filter(a => a.estudiante_id === formData.estudiante_id);
+
+                return (
+                  <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 flex items-center">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2" />
+                        Ficha del Estudiante y Acudiente (Cargada Automáticamente)
+                      </span>
+                      <span className="text-xs font-semibold text-emerald-700 bg-white px-2.5 py-0.5 rounded-full border border-emerald-200">
+                        Grado: {estSeleccionado.grado || 'S/G'}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                      <div>
+                        <span className="text-slate-500 block">Documento:</span>
+                        <span className="font-semibold text-slate-800">{estSeleccionado.documento || 'No registrado'}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 block">Acudiente:</span>
+                        <span className="font-semibold text-slate-800">
+                          {estSeleccionado.datos_acudiente?.nombres || 'Sin acudiente registrado'}
+                          {estSeleccionado.datos_acudiente?.parentesco ? ` (${estSeleccionado.datos_acudiente.parentesco})` : ''}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 block">Teléfono Acudiente:</span>
+                        <span className="font-semibold text-slate-800">
+                          {estSeleccionado.datos_acudiente?.telefono || 'No registrado'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {atencionesEst.length > 0 && (
+                      <div className="mt-3 pt-2.5 border-t border-emerald-200/60 text-xs">
+                        <span className="font-bold text-slate-700">Caso de Atención Inicial: </span>
+                        <span className="text-slate-600">
+                          {atencionesEst[0].fecha} — {atencionesEst[0].motivos?.[0] || 'Atención general'}: {atencionesEst[0].descripcion ? (atencionesEst[0].descripcion.slice(0, 110) + '...') : ''}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>

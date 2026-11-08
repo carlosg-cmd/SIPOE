@@ -32,14 +32,14 @@ export default function MainLayout() {
     { 
       name: 'Formatos', icon: '■',
       subItems: [
-        { name: 'Consentimiento informado', path: '/formatos/consentimiento' },
+        { name: 'Consentimiento informado', path: '/?formato=consentimiento' },
         { name: 'At. orientación escolar', path: '/atenciones' },
-        { name: 'At. con padres', path: '/formatos/padres' },
+        { name: 'At. con padres', path: '/?formato=padres' },
         { name: 'Convivencia', path: '/seguimientos' },
-        { name: 'Rem. coordinación', path: '/formatos/coordinacion' },
+        { name: 'Rem. coordinación', path: '/?formato=coord' },
         { name: 'Intervenciones grupales', path: '/intervenciones-grupales' },
-        { name: 'Inf. entrega de caso', path: '/formatos/entrega' },
-        { name: 'Rem. entidad', path: '/formatos/entidad' }
+        { name: 'Inf. entrega de caso', path: '/?formato=entrega' },
+        { name: 'Rem. entidad', path: '/?formato=entidad' }
       ]
     },
     { 
